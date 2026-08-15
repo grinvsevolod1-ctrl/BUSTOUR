@@ -70,6 +70,7 @@
     "consentium": "^0.1.2",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
+    "exceljs": "^4.4.0",
     "flatpickr": "^4.6.13",
     "libphonenumber-js": "^1.13.10",
     "lucide-react": "^1.16.0",

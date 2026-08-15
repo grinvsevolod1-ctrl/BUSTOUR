@@ -395,7 +395,7 @@ export const pageSettingsGroups: Record<string, {
           { key: "title.featured", label: "Лучшие предложения — заголовок", type: "shortcode-input" },
           {
             key: "description.featured",
-            label: "Лучшие предложения — описание под заголовком",
+            label: "Лучшие предложения �� описание под заголовком",
             type: "shortcode-textarea-multiline",
             rows: 2,
             hint: "Короткий текст-интро над карточками «Лучшие предложения».",
@@ -784,7 +784,7 @@ export function aviaCityPageConfig(
     heading: isBus ? `Автобусные туры > Город: ${name}` : `Авиатуры > Город: ${name}`,
     url: isBus ? `/avtobusnye-tury/_/${slug}/` : `/aviatury/_/${slug}/`,
     sections: [
-      { key: `${p}.section.search`, label: "Фильтр и результаты поиска" },
+      { key: `${p}.section.search`, label: "Фильтр и резул��таты поиска" },
       { key: `${p}.section.cities`, label: "Карточки курортов" },
       { key: `${p}.section.resorts`, label: "Таблица" },
       { key: `${p}.section.seo`, label: "SEO-текст (расширенный)" },
@@ -1232,6 +1232,57 @@ export const callusBannerSettingsGroup: SettingsGroup = {
 
 /** Site-wide settings page — contacts live under «Страницы → Контакты». */
 export const settingsGroups: SettingsGroup[] = [
+  {
+    heading: "Важное сообщение (попап)",
+    description:
+      "Всплывающее окно при заходе на сайт — для срочных объявлений: график работы в праздники, изменения рейсов и т.п.",
+    fields: [
+      {
+        key: "announcement.enabled",
+        label: "Показывать сообщение",
+        type: "select",
+        defaultValue: "0",
+        options: [
+          { value: "1", label: "Да — попап активен" },
+          { value: "0", label: "Нет — скрыт" },
+        ],
+      },
+      {
+        key: "announcement.title",
+        label: "Заголовок",
+        type: "shortcode-input",
+        placeholder: "С Новым годом!",
+      },
+      {
+        key: "announcement.text",
+        label: "Текст сообщения",
+        type: "shortcode-textarea-multiline",
+        rows: 4,
+        placeholder: "Мы не работаем с 31 декабря по 3 января. Заявки, оставленные на сайте, обработаем 4 января.",
+        hint: "Каждая строка — отдельный абзац.",
+      },
+      {
+        key: "announcement.type",
+        label: "Тон сообщения",
+        type: "select",
+        defaultValue: "info",
+        options: ALERT_KIND_OPTIONS,
+      },
+      {
+        key: "announcement.startDate",
+        label: "Показывать с (дата)",
+        placeholder: "2025-12-25",
+        hint: "Формат ГГГГ-ММ-ДД. Пусто — показывать сразу.",
+      },
+      {
+        key: "announcement.endDate",
+        label: "Показывать по (дата)",
+        placeholder: "2026-01-03",
+        hint: "Формат ГГГГ-ММ-ДД, включительно. Пусто — без ограничения.",
+      },
+    ],
+    help: "Посетитель закрывает попап один раз — повторно он не появится, пока вы не измените текст или заголовок сообщения. Изменили текст — попап покажется всем снова.",
+  },
   {
     heading: "Сайт",
     description: "Основные настройки сайта.",

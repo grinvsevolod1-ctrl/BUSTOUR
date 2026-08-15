@@ -34,6 +34,13 @@ export const defaultSettings: Record<string, string> = {
   "analytics.successRedirectUrl": "",
   // Admin audit retention (days); purge older rows automatically
   "admin.auditRetentionDays": "60",
+  // Site-wide announcement popup (важное сообщение при заходе на сайт)
+  "announcement.enabled": "0",
+  "announcement.title": "",
+  "announcement.text": "",
+  "announcement.type": "info",
+  "announcement.startDate": "",
+  "announcement.endDate": "",
   // Socials — unified list; legacy keys kept for migration on read
   "social.links": JSON.stringify(defaultSocialLinks()),
   "social.viber": "viber://chat",
@@ -188,7 +195,7 @@ export const defaultBlocks: BlockSeed[] = [
   {
     collection: "hero",
     title: "Выходные, которые запомнятся",
-    subtitle: "Санкт-Петербург, Москва, Карелия и Вильнюс — в удобном формате из Минска.",
+    subtitle: "Санкт-Петербург, Мос��ва, Карелия и Вильнюс — в удобном формате из Минска.",
     image: "/images/caucasus.png",
     href: "/avtobusnye-tury/",
     extra: { buttonText: "Выбрать маршрут" },

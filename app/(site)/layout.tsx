@@ -6,6 +6,8 @@ import { getPrimaryEmail, getPrimaryPhone } from "@/lib/contact-settings"
 import { buildTravelAgencyJsonLd, serializeJsonLd } from "@/lib/site-schema"
 import { getBustourDeployEnv } from "@/lib/deploy-env"
 import { AnalyticsWhenConsented } from "@/components/analytics-when-consented"
+import { AnnouncementPopup } from "@/components/site/announcement-popup"
+import { getActiveAnnouncement } from "@/lib/announcement"
 
 export const dynamic = "force-dynamic"
 
@@ -14,6 +16,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     getPublicSettings(),
     getBlocks("direction", { onlyVisible: true }),
   ])
+  const announcement = getActiveAnnouncement(settings)
   const primaryPhone = getPrimaryPhone(settings)
   const orgSchema = buildTravelAgencyJsonLd(settings, {
     phone: primaryPhone?.href.replace(/^tel:/, "") || settings["site.phone"],
@@ -34,6 +37,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           <SiteFooter settings={settings} directions={directions} />
         </div>
       </CallbackProvider>
+      {announcement ? (
+        <AnnouncementPopup title={announcement.title} text={announcement.text} type={announcement.type} />
+      ) : null}
       <AnalyticsWhenConsented settings={settings} />
     </>
   )
