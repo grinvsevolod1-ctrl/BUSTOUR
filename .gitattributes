@@ -1,0 +1,20 @@
+# Normalize line endings to LF everywhere (prevents CRLF breaking .env / bash
+# scripts / DATABASE_URL parsing when deploying from Windows machines).
+* text=auto eol=lf
+
+# Shell scripts must always be LF
+*.sh text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.mp4 binary
+*.pdf binary

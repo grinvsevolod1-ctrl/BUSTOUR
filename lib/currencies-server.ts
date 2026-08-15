@@ -51,9 +51,8 @@ export async function getCurrencies(): Promise<Currency[]> {
   return rows.map(mapCurrency)
 }
 
-export function getBaseCurrency(list: Currency[]): Currency | undefined {
-  return list.find((c) => c.isBase) ?? list[0]
-}
+// Single source of truth lives in lib/currencies.ts (re-exported for convenience).
+export { getBaseCurrency } from "@/lib/currencies"
 
 export async function refreshCurrenciesFromNbrb(markupPercent = 0): Promise<{
   updated: number

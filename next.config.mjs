@@ -27,12 +27,12 @@ const nextConfig = {
               "default-src 'self'",
               // 'unsafe-eval' нужен только webpack-у в dev-режиме (HMR/eval-source-map).
               // В production он исключается — это заметно сужает поверхность XSS.
-              `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://mc.yandex.ru https://yastatic.net https://cdn.jsdelivr.net`,
-              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+              `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://mc.yandex.ru https://mc.yandex.by https://yastatic.net https://cdn.jsdelivr.net https://tourvisor.ru https://*.tourvisor.ru`,
+              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://tourvisor.ru https://*.tourvisor.ru",
               "img-src 'self' data: blob: https: http:",
-              "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://www.google.com https://mc.yandex.ru https://api.resend.com",
-              "frame-src 'self' https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com https://mc.yandex.ru",
+              "font-src 'self' https://fonts.gstatic.com https://tourvisor.ru https://*.tourvisor.ru",
+              "connect-src 'self' https://www.google.com https://mc.yandex.ru https://mc.yandex.by https://api.resend.com https://tourvisor.ru https://*.tourvisor.ru",
+              "frame-src 'self' https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com https://mc.yandex.ru https://mc.yandex.by https://tourvisor.ru https://*.tourvisor.ru",
               "frame-ancestors 'none'",
               "form-action 'self'",
               "base-uri 'self'",

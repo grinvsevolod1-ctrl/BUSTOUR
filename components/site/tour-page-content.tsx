@@ -30,7 +30,7 @@ import {
   serializeJsonLd,
 } from "@/lib/site-schema"
 import { reviewsToSchemaItems } from "@/components/site/reviews-json-ld"
-import { withProductReviews } from "@/lib/reviews-schema"
+import { withProductReviews } from "@/lib/reviews-json-ld"
 import type { Tour, IncludedGroup, Review, TourSectionKey } from "@/lib/types"
 
 type BreadcrumbItem = { label: string; href?: string }

@@ -30,6 +30,7 @@ import { defaultSettings, defaultBlocks } from "./cms-seed"
 import { seedCities } from "./cities-seed"
 import { hashPassword } from "../password"
 import { parseLegacyDateRange } from "../dates-table"
+import { getBustourDeployEnv } from "../deploy-env"
 
 function parsePriceAmount(price: string): number {
   const digits = String(price).replace(/\D/g, "")
@@ -109,7 +110,14 @@ async function seedBuiltinShortcodes() {
     })
 }
 
+/**
+ * Dev/local-only test accounts. NEVER runs on production:
+ * hardcoded credentials would be a backdoor, and the forced
+ * password reset would override real admin changes.
+ */
 async function seedExtraAdmins() {
+  if (getBustourDeployEnv() === "production") return
+
   const now = Date.now()
   const extras = [
     { username: "test", password: "testtest", role: "admin" },
@@ -125,19 +133,7 @@ async function seedExtraAdmins() {
       .where(eq(admins.username, item.username))
       .limit(1)
 
-    if (existing) {
-      if (item.username === "test" || item.username === "admin2" || item.username === "superadmin") {
-        await db
-          .update(admins)
-          .set({
-            passwordHash: hashPassword(item.password),
-            role: item.role,
-            active: true,
-          })
-          .where(eq(admins.username, item.username))
-      }
-      continue
-    }
+    if (existing) continue
 
     await db.insert(admins).values({
       username: item.username,
@@ -568,33 +564,48 @@ async function seedOperationalData() {
 }
 
 async function seed() {
-  await seedCatalog()
-  await seedReviewsAndArticles()
+  const isProduction = getBustourDeployEnv() === "production"
+
+  // Essential defaults — safe on any environment (all are count===0 / conflict-guarded).
   await seedAdminAndLookups()
   await seedSettingsDefaults()
   await seedContentBlocks()
-  await seedOperationalData()
   await seedAdminRoleCatalog()
   await seedBuiltinShortcodes()
-  await seedExtraAdmins()
+
+  // Demo/test data — never on production.
+  if (!isProduction) {
+    await seedCatalog()
+    await seedReviewsAndArticles()
+    await seedOperationalData()
+    await seedExtraAdmins()
+  }
 }
 
-let ready: Promise<void> | null = null
+/**
+ * Set BASTUR_SKIP_RUNTIME_MIGRATIONS=1 when the schema is managed
+ * externally (e.g. `npm run db:migrate:prod` during deploy) so the
+ * web process does not attempt DDL at startup.
+ */
+function shouldRunRuntimeMigrations(): boolean {
+  const raw = (process.env.BASTUR_SKIP_RUNTIME_MIGRATIONS || "").trim().toLowerCase()
+  return !(raw === "1" || raw === "true" || raw === "yes")
+}
 
 export function ensureDb() {
   const g = globalThis as typeof globalThis & { __bustourEnsureDb?: Promise<void> }
   if (!g.__bustourEnsureDb) {
     g.__bustourEnsureDb = (async () => {
       await readyClient()
-      await applyMigrations()
+      if (shouldRunRuntimeMigrations()) {
+        await applyMigrations()
+      }
       await seed()
     })().catch((error) => {
       g.__bustourEnsureDb = undefined
-      ready = null
       throw error
     })
   }
-  ready = g.__bustourEnsureDb
   return g.__bustourEnsureDb
 }
 

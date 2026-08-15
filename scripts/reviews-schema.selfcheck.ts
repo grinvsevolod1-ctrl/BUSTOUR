@@ -11,7 +11,7 @@ import {
   reviewDatePublished,
   serializeJsonLd,
   withProductReviews,
-} from "../lib/reviews-schema"
+} from "../lib/reviews-json-ld"
 import { buildProductOfferJsonLd } from "../lib/site-schema"
 
 const root = process.cwd()

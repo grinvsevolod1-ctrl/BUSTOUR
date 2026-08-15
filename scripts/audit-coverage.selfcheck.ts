@@ -3,7 +3,7 @@
  * Run: npx tsx scripts/audit-coverage.selfcheck.ts
  */
 import assert from "node:assert/strict"
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 
 const root = process.cwd()
@@ -115,7 +115,12 @@ mustHave("app/api/admin/parse-holiday-reviews/route.ts", ["writeAudit", "review_
 
 mustHave("app/admin/audit-actions.ts", ["writeAudit", "audit_retention_update", "audit_purge"])
 
-// Policy rule must exist
-mustHave(".cursor/rules/admin-audit.mdc", ["writeAudit", "admin_audit_log", "alwaysApply"])
+// Policy rule (editor-local, not tracked in git) — validate only when present
+// so CI/fresh clones without .cursor/ don't fail the preflight.
+if (existsSync(join(root, ".cursor/rules/admin-audit.mdc"))) {
+  mustHave(".cursor/rules/admin-audit.mdc", ["writeAudit", "admin_audit_log", "alwaysApply"])
+} else {
+  console.log("audit coverage selfcheck: .cursor/rules/admin-audit.mdc not found, skipping (editor-local file)")
+}
 
 console.log("audit coverage selfcheck passed")

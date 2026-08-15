@@ -11,7 +11,7 @@ import {
   primaryReviewPhotoUrl,
   reviewHasMedia,
 } from "@/lib/review-admin"
-import { reviewDatePublished } from "@/lib/reviews-schema"
+import { reviewDatePublished } from "@/lib/reviews-json-ld"
 import { reviewAvatarTone, reviewPlainText } from "@/lib/review-utils"
 import { syncReviewRowClamps } from "@/lib/review-row-clamp"
 import { fallbackThumbnail, getEmbedUrl } from "@/lib/video-url"

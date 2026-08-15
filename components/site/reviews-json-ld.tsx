@@ -7,7 +7,7 @@ import {
   serializeJsonLd,
   type ItemReviewedRef,
   type ReviewSchemaItem,
-} from "@/lib/reviews-schema"
+} from "@/lib/reviews-json-ld"
 import { organizationId } from "@/lib/site-schema"
 
 export type { ReviewSchemaItem }

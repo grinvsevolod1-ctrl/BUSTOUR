@@ -48,8 +48,9 @@ export function PageFaqForm({
       validate(): AdminSaveResult {
         const form = formRef.current
         if (!form) return { ok: true }
-        const questions = form.getAll("faqQuestion").map((v: FormDataEntryValue) => String(v).trim())
-        const answers = form.getAll("faqAnswer").map((v: FormDataEntryValue) => String(v).trim())
+        const fd = new FormData(form)
+        const questions = fd.getAll("faqQuestion").map((v: FormDataEntryValue) => String(v).trim())
+        const answers = fd.getAll("faqAnswer").map((v: FormDataEntryValue) => String(v).trim())
         if (questions.length !== answers.length) {
           return { ok: false, error: "FAQ: количество вопросов и ответов не совпадает", firstError: { field: "faqQuestion", message: "Проверьте заполнение FAQ", focusId: focusAnchor, tabHash } }
         }

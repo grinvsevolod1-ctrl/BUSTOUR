@@ -4,6 +4,9 @@
    no longer ships this file in stable releases, so we keep a local copy. */
 @import '../styles/shadcn-tailwind.css';
 @import 'flatpickr/dist/flatpickr.css';
+/* Base ProseMirror styles (white-space handling, cursor, gap-cursor). Without
+   this import the editor logs "no stylesheet loaded" warnings at runtime. */
+@import 'prosemirror-view/style/prosemirror.css';
 
 @custom-variant dark (&:is(.dark *));
 
