@@ -14,7 +14,7 @@ import {
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..")
 
-// missing РІвЂ вЂ™ defaults; explicit empty remains intentionally empty
+// missing → defaults; explicit empty remains intentionally empty
 assert.deepEqual(
   resolveTourLayout(undefined).map((s) => s.key),
   defaultTourSections.map((s) => s.key),
@@ -30,7 +30,7 @@ assert.deepEqual(
   withoutReviews.map((s) => s.key),
 )
 
-// missing catalog for "Р вЂќР С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ РЎРѓР ВµР С”РЎвЂ Р С‘РЎР‹"
+// missing catalog for "Добавить секцию"
 const missing = missingTourSections(withoutReviews)
 assert.equal(missing.length, 1)
 assert.equal(missing[0]!.key, "reviews")

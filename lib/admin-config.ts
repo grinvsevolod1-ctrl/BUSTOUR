@@ -395,7 +395,7 @@ export const pageSettingsGroups: Record<string, {
           { key: "title.featured", label: "Лучшие предложения — заголовок", type: "shortcode-input" },
           {
             key: "description.featured",
-            label: "Лучшие предложения �� описание под заголовком",
+            label: "Лучшие предложения — описание под заголовком",
             type: "shortcode-textarea-multiline",
             rows: 2,
             hint: "Короткий текст-интро над карточками «Лучшие предложения».",
@@ -784,7 +784,7 @@ export function aviaCityPageConfig(
     heading: isBus ? `Автобусные туры > Город: ${name}` : `Авиатуры > Город: ${name}`,
     url: isBus ? `/avtobusnye-tury/_/${slug}/` : `/aviatury/_/${slug}/`,
     sections: [
-      { key: `${p}.section.search`, label: "Фильтр и резул��таты поиска" },
+      { key: `${p}.section.search`, label: "Фильтр и результаты поиска" },
       { key: `${p}.section.cities`, label: "Карточки курортов" },
       { key: `${p}.section.resorts`, label: "Таблица" },
       { key: `${p}.section.seo`, label: "SEO-текст (расширенный)" },

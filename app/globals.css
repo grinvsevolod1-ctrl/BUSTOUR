@@ -25,6 +25,7 @@
   --color-success: #08875d;
   /* Admin panel — Vercel-inspired light palette */
   --color-admin-bg: #fafafa;
+  --color-admin-card: #ffffff;
   --color-admin-fg: #171717;
   --color-admin-fg-muted: #666666;
   --color-admin-fg-subtle: #999999;

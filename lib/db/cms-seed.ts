@@ -195,7 +195,7 @@ export const defaultBlocks: BlockSeed[] = [
   {
     collection: "hero",
     title: "Выходные, которые запомнятся",
-    subtitle: "Санкт-Петербург, Мос��ва, Карелия и Вильнюс — в удобном формате из Минска.",
+    subtitle: "Санкт-Петербург, Москва, Карелия и Вильнюс — в удобном формате из Минска.",
     image: "/images/caucasus.png",
     href: "/avtobusnye-tury/",
     extra: { buttonText: "Выбрать маршрут" },

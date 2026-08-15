@@ -554,7 +554,7 @@ async function seedOperationalData() {
     if (licensesSection) {
       await db.insert(certificates).values([
         { sectionId: licensesSection.id, name: "Лицензия на туроператорскую деятельность", description: "Лицензия Министерства спорта и туризма Республики Беларусь, серия 02040/0247538", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=80", sortOrder: 0, createdAt: now },
-        { sectionId: licensesSection.id, name: "Свидетельство о государственн��й регистрации", description: "УНП 191560040, зарегистрировано Минским горисполкомом", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80", sortOrder: 1, createdAt: now + 1 },
+        { sectionId: licensesSection.id, name: "Свидетельство о государственной регистрации", description: "УНП 191560040, зарегистрировано Минским горисполкомом", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80", sortOrder: 1, createdAt: now + 1 },
       ])
     }
 

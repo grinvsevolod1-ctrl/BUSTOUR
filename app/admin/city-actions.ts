@@ -139,7 +139,7 @@ export async function saveCityPageAction(_prev: unknown, formData: FormData) {
     const fullField = `${pageKey}.${field}`
     const tabHash = "#settings-content" as const
     return {
-      error: `Проверьте поле «${labels[field] ?? "Основные данные"}»: ${issue?.message ?? "исправ��те значение"}`,
+      error: `Проверьте поле «${labels[field] ?? "Основные данные"}»: ${issue?.message ?? "исправьте значение"}`,
       fieldErrors: { [fullField]: issue?.message ?? "Исправьте значение" },
       firstError: {
         field,

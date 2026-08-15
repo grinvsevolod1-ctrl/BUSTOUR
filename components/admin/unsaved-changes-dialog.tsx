@@ -62,7 +62,7 @@ export function UnsavedChangesDialog({ open, dirtyCount, onStay, onDiscard }: Pr
         <h2 id="unsaved-title" className="text-lg font-semibold">
           Есть несохранённые изменения
         </h2>
-        <p id="unsaved-description" className="mt-2 text-sm text-admin-muted">
+        <p id="unsaved-description" className="mt-2 text-sm text-admin-fg-muted">
           {dirtyCount === 1
             ? "Одна область содержит несохранённые данные."
             : `Несохранённые данные есть в ${dirtyCount} областях.`}

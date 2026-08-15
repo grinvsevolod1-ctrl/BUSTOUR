@@ -95,5 +95,8 @@ export function AnalyticsWhenConsented({ settings }: { settings: Record<string, 
     }
   }, [config.successRedirectUrl, router])
 
-  return allowed && process.env.NODE_ENV === "production" ? <Analytics /> : null
+  // Vercel Web Analytics works only when deployed on Vercel; on self-hosted
+  // (pm2/nginx) the /_vercel/insights script 404s — skip it there.
+  const onVercel = Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV)
+  return allowed && onVercel && process.env.NODE_ENV === "production" ? <Analytics /> : null
 }
