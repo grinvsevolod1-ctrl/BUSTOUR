@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { ArrowLeft, ExternalLink, Plus, Save, Trash2 } from "lucide-react"
 import { useActionState, useEffect, useState, type FormEvent } from "react"
-import type { DatesTable, DatesTableRow, DatesTableTag, DatesTableRoom, Tour } from "@/lib/types"
+import type { Currency, DatesTable, DatesTableRow, DatesTableTag, DatesTableRoom, Tour } from "@/lib/types"
+import { CurrencySelect } from "@/components/currency/currency-select"
 import { deriveDuration, finalPrice, isUpcomingDeparture, datesTableRangeError, dateRangeOrderError, TAG_ICONS, coerceDatesTable } from "@/lib/dates-table"
 import { ALERT_KIND_OPTIONS } from "@/lib/alert-kind"
 import { saveTourDatesTableAction } from "@/app/admin/actions"
@@ -18,7 +19,15 @@ function copyTable(table: DatesTable): DatesTable {
 
 const emptyRow: DatesTableRow = { startDate: "", endDate: "", description: "", extraPriceAmount: 0, extraPriceCurrency: "", tags: [], rooms: [] }
 
-export function TourPricingEditor({ tour, cityName }: { tour: Tour; cityName: string }) {
+export function TourPricingEditor({
+  tour,
+  cityName,
+  currencies = [],
+}: {
+  tour: Tour
+  cityName: string
+  currencies?: Currency[]
+}) {
   const datesLabel = resolveTourLayout(tour.layout).find((section) => section.key === "dates")?.label || "Даты и цены"
   const [table, setTable] = useState<DatesTable>(() => copyTable(tour.datesTable))
   const [clientError, setClientError] = useState<string | null>(null)
@@ -110,12 +119,22 @@ export function TourPricingEditor({ tour, cityName }: { tour: Tour; cityName: st
             </div>
             <div>
               <Label htmlFor="dates-currency">Валюта</Label>
-              <Input
-                id="dates-currency"
-                value={table.currency}
-                onChange={(event) => patch({ currency: event.target.value })}
-                placeholder="BYN"
-              />
+              {currencies.length ? (
+                <CurrencySelect
+                  value={table.currency}
+                  onChange={(code) => patch({ currency: code })}
+                  options={currencies}
+                  ariaLabel="Валюта таблицы дат"
+                  className="w-full"
+                />
+              ) : (
+                <Input
+                  id="dates-currency"
+                  value={table.currency}
+                  onChange={(event) => patch({ currency: event.target.value })}
+                  placeholder="BYN"
+                />
+              )}
             </div>
           </div>
           <div className="rounded-md border border-admin-border p-3" data-dates-footnotes-editor>

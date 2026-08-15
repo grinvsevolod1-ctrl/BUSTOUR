@@ -1,7 +1,8 @@
 "use client"
 
 import { ChevronDown, ExternalLink } from "lucide-react"
-import { Badge, ButtonLink, Input, Label, Select } from "@/components/admin/ui"
+import { Badge, ButtonLink, Input, Label } from "@/components/admin/ui"
+import { CurrencySelect } from "@/components/currency/currency-select"
 import { emptyDatesTable } from "@/lib/dates-table"
 import { buildTourAdditionalUi } from "@/lib/tour-additional-ui"
 import type { Currency, DatesTable } from "@/lib/types"
@@ -75,18 +76,13 @@ export function TourAdditionalBlock({
                 required={ui.priceRequired}
                 className="flex-1"
               />
-              <Select
-                id="datesCurrency"
+              <CurrencySelect
                 name="datesCurrency"
-                defaultValue={datesCurrency || currencyCode || "BYN"}
-                className="shrink-0 w-auto min-w-[72px] bg-admin-muted"
-              >
-                {currencyList.map((currency) => (
-                  <option key={currency.code} value={currency.code}>
-                    {currency.code}
-                  </option>
-                ))}
-              </Select>
+                value={datesCurrency || currencyCode || currencyList[0]?.code || ""}
+                options={currencyList}
+                ariaLabel="Валюта базовой цены"
+                className="shrink-0 min-w-[88px]"
+              />
             </div>
             <p className="mt-1 text-xs text-admin-fg-subtle">{ui.price.hint}</p>
           </div>
@@ -105,19 +101,14 @@ export function TourAdditionalBlock({
           </div>
           <div>
             <Label htmlFor="extraPriceCurrency">Валюта доп. цены</Label>
-            <Select
-              id="extraPriceCurrency"
+            <CurrencySelect
               name="extraPriceCurrency"
-              defaultValue={extraPriceCurrency || "USD"}
+              value={extraPriceCurrency ?? ""}
+              options={currencyList}
+              allowEmpty
+              ariaLabel="Валюта дополнительной цены"
               className="w-full"
-            >
-              <option value="">— не указана —</option>
-              {currencyList.map((currency) => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.code}
-                </option>
-              ))}
-            </Select>
+            />
             <p className="mt-1 text-xs text-admin-fg-subtle">Обычно USD или EUR.</p>
           </div>
           <div>
