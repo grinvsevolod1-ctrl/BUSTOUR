@@ -5,6 +5,7 @@ import { ensureDb } from "@/lib/db/init"
 import type { Country } from "@/lib/types"
 import { slugify } from "@/lib/slug"
 import { toArchivedSlug, stripArchivedSuffix } from "@/lib/archive-slug"
+import { computeSwapUpdates, type MoveDirection } from "@/lib/queries/move"
 
 export const COUNTRY_ARCHIVE_BLOCKED_BY_TOURS =
   "Нельзя заархивировать, пока существуют активные туры в этом направлении"
@@ -130,8 +131,8 @@ export async function updateCountry(id: number, input: CountryInput, executor: D
     .where(eq(countries.id, id))
 }
 
-/** Swap sortOrder with neighbour in the same category (active list). */
-export async function moveCountry(id: number, direction: "up" | "down") {
+/** Swap sortOrder with neighbour in the same category (active list). Normalizes duplicate orders. */
+export async function moveCountry(id: number, direction: MoveDirection) {
   await ensureDb()
   const [current] = await db.select().from(countries).where(eq(countries.id, id)).limit(1)
   if (!current || current.archived) return
@@ -140,12 +141,13 @@ export async function moveCountry(id: number, direction: "up" | "down") {
     .from(countries)
     .where(and(eq(countries.category, current.category), eq(countries.archived, false)))
     .orderBy(asc(countries.sortOrder), asc(countries.id))
-  const index = siblings.findIndex((c) => c.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (swapIndex < 0 || swapIndex >= siblings.length) return
-  const neighbour = siblings[swapIndex]
-  await db.update(countries).set({ sortOrder: neighbour.sortOrder }).where(eq(countries.id, current.id))
-  await db.update(countries).set({ sortOrder: current.sortOrder }).where(eq(countries.id, neighbour.id))
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
+  await db.transaction(async (tx) => {
+    for (const u of updates) {
+      await tx.update(countries).set({ sortOrder: u.sortOrder }).where(eq(countries.id, u.id))
+    }
+  })
 }
 
 export async function reorderCountries(orderedIds: number[]) {

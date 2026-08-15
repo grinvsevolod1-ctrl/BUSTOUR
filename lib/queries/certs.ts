@@ -6,6 +6,7 @@ import { isArticleCategory, type Bus, type Transfer, type TransferCategory, type
 import { parseAlertKind } from "@/lib/alert-kind"
 import { getArchivedCities } from "@/lib/cities"
 import { getArchivedCountries } from "@/lib/countries"
+import { computeSwapUpdates, type MoveDirection } from "./move"
 import {
   coerceDatesTable,
   deriveDuration,
@@ -89,25 +90,20 @@ export async function deleteCertSection(id: number) {
 }
 
 /** Swap sortOrder with neighbour section. Normalizes duplicate orders. */
-export async function moveCertSection(id: number, direction: "up" | "down") {
+export async function moveCertSection(id: number, direction: MoveDirection) {
   await ensureDb()
   const siblings = await db.select().from(certSections).orderBy(asc(certSections.sortOrder), asc(certSections.createdAt))
-  const index = siblings.findIndex((s) => s.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
-  const ordered = [...siblings]
-  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
   await db.transaction(async (tx) => {
-    for (let i = 0; i < ordered.length; i++) {
-      if (ordered[i].sortOrder !== i) {
-        await tx.update(certSections).set({ sortOrder: i }).where(eq(certSections.id, ordered[i].id))
-      }
+    for (const u of updates) {
+      await tx.update(certSections).set({ sortOrder: u.sortOrder }).where(eq(certSections.id, u.id))
     }
   })
 }
 
 /** Swap sortOrder with neighbour certificate within the same section. Normalizes duplicate orders. */
-export async function moveCertificate(id: number, direction: "up" | "down") {
+export async function moveCertificate(id: number, direction: MoveDirection) {
   await ensureDb()
   const [current] = await db.select().from(certificates).where(eq(certificates.id, id)).limit(1)
   if (!current) return
@@ -116,16 +112,11 @@ export async function moveCertificate(id: number, direction: "up" | "down") {
     .from(certificates)
     .where(eq(certificates.sectionId, current.sectionId))
     .orderBy(asc(certificates.sortOrder), asc(certificates.createdAt))
-  const index = siblings.findIndex((c) => c.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
-  const ordered = [...siblings]
-  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
   await db.transaction(async (tx) => {
-    for (let i = 0; i < ordered.length; i++) {
-      if (ordered[i].sortOrder !== i) {
-        await tx.update(certificates).set({ sortOrder: i }).where(eq(certificates.id, ordered[i].id))
-      }
+    for (const u of updates) {
+      await tx.update(certificates).set({ sortOrder: u.sortOrder }).where(eq(certificates.id, u.id))
     }
   })
 }

@@ -6,6 +6,7 @@ import { isArticleCategory, type Bus, type Transfer, type TransferCategory, type
 import { parseAlertKind } from "@/lib/alert-kind"
 import { getArchivedCities } from "@/lib/cities"
 import { getArchivedCountries } from "@/lib/countries"
+import { computeSwapUpdates, type MoveDirection } from "./move"
 import {
   coerceDatesTable,
   deriveDuration,
@@ -73,23 +74,18 @@ export async function updateStaffMember(id: number, input: StaffInput) {
 }
 
 /** Swap sortOrder with neighbour in the active staff list. Normalizes duplicate orders. */
-export async function moveStaffMember(id: number, direction: "up" | "down") {
+export async function moveStaffMember(id: number, direction: MoveDirection) {
   await ensureDb()
   const siblings = await db
     .select()
     .from(staff)
     .where(eq(staff.archived, false))
     .orderBy(asc(staff.sortOrder), asc(staff.createdAt))
-  const index = siblings.findIndex((m) => m.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
-  const ordered = [...siblings]
-  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
   await db.transaction(async (tx) => {
-    for (let i = 0; i < ordered.length; i++) {
-      if (ordered[i].sortOrder !== i) {
-        await tx.update(staff).set({ sortOrder: i }).where(eq(staff.id, ordered[i].id))
-      }
+    for (const u of updates) {
+      await tx.update(staff).set({ sortOrder: u.sortOrder }).where(eq(staff.id, u.id))
     }
   })
 }

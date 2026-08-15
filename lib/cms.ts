@@ -6,6 +6,7 @@ import { ensureDb } from "@/lib/db/init"
 import { defaultSettings } from "@/lib/db/cms-seed"
 import { expandSettingsValues } from "@/lib/expand-content-blocks"
 import type { BlockCollection, ContentBlock, SiteSettings } from "@/lib/types"
+import { computeSwapUpdates, type MoveDirection } from "@/lib/queries/move"
 
 /* ---------------- Settings ---------------- */
 
@@ -291,8 +292,8 @@ export async function setBlockVisibility(id: number, visible: boolean) {
   await db.update(contentBlocks).set({ visible }).where(eq(contentBlocks.id, id))
 }
 
-// Move a block up/down within its collection by swapping sortOrder with its neighbour.
-export async function moveBlock(id: number, direction: "up" | "down") {
+// Move a block up/down within its collection. Normalizes duplicate orders.
+export async function moveBlock(id: number, direction: MoveDirection) {
   await ensureDb()
   const [current] = await db.select().from(contentBlocks).where(eq(contentBlocks.id, id)).limit(1)
   if (!current) return
@@ -301,12 +302,13 @@ export async function moveBlock(id: number, direction: "up" | "down") {
     .from(contentBlocks)
     .where(eq(contentBlocks.collection, current.collection))
     .orderBy(asc(contentBlocks.sortOrder), asc(contentBlocks.id))
-  const index = siblings.findIndex((b) => b.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (swapIndex < 0 || swapIndex >= siblings.length) return
-  const neighbour = siblings[swapIndex]
-  await db.update(contentBlocks).set({ sortOrder: neighbour.sortOrder }).where(eq(contentBlocks.id, current.id))
-  await db.update(contentBlocks).set({ sortOrder: current.sortOrder }).where(eq(contentBlocks.id, neighbour.id))
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
+  await db.transaction(async (tx) => {
+    for (const u of updates) {
+      await tx.update(contentBlocks).set({ sortOrder: u.sortOrder }).where(eq(contentBlocks.id, u.id))
+    }
+  })
 }
 
 export async function reorderBlocks(collection: BlockCollection, orderedIds: number[]) {

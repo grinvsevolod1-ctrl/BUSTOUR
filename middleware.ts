@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { ADMIN_COOKIE_NAME, hasValidAdminSessionToken } from "@/lib/admin-session"
 import { PREVIEW_QUERY, verifyPreviewToken } from "@/lib/preview-token"
 import { DEFAULT_AVIA_SLUG } from "@/lib/avia-slug"
+import { INTERNAL_ORIGIN, publicOrigin } from "@/lib/proxy-origin"
 
 export const runtime = "nodejs"
 
@@ -14,16 +15,6 @@ export const runtime = "nodejs"
 let cachedAviaSlug: string | null = null
 let cacheTs = 0
 const CACHE_TTL_MS = 60_000 // 1 minute
-
-/**
- * Internal (loopback) origin of this very Node process.
- *
- * Behind nginx `request.nextUrl.origin` becomes `https://localhost:3000`
- * (scheme from X-Forwarded-Proto, host normalized by Next standalone) —
- * fetching or rewriting to it makes Next talk TLS to its own plain-HTTP
- * port and every request 500s with EPROTO. Loopback over http avoids that.
- */
-const INTERNAL_ORIGIN = `http://127.0.0.1:${process.env.PORT || 3000}`
 
 async function getAviaSlug(): Promise<string> {
   const now = Date.now()
@@ -103,12 +94,9 @@ export async function middleware(request: NextRequest) {
   // 2. Requests to /aviatory/... → 301 redirect to /{aviaSlug}/...
   if (pathname === "/aviatory" || pathname.startsWith("/aviatory/")) {
     const redirected = pathname.replace("/aviatory", `/${aviaSlug}`)
-    // The Location header must carry the PUBLIC origin. nextUrl.origin is
-    // normalized to localhost behind a proxy, so rebuild it from the
-    // forwarded headers (nginx sets Host + X-Forwarded-Proto).
-    const host = request.headers.get("host") ?? request.nextUrl.host
-    const proto = request.headers.get("x-forwarded-proto") ?? "https"
-    const url = new URL(redirected || `/${aviaSlug}/`, `${proto}://${host}`)
+    // Location должен нести ПУБЛИЧНЫЙ origin (nextUrl.origin за прокси —
+    // localhost), поэтому восстанавливаем его из форвард-заголовков.
+    const url = new URL(redirected || `/${aviaSlug}/`, publicOrigin(request.headers, request.nextUrl.host))
     url.search = request.nextUrl.search
     return NextResponse.redirect(url, 301)
   }

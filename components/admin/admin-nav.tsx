@@ -45,15 +45,9 @@ import {
   type AdminRole,
 } from '@/lib/admin-roles';
 
-const STORAGE_KEY = 'bustour-admin-nav-open';
+import type { AdminCapability as Capability } from '@/components/admin/admin-sections';
 
-type Capability =
-  | 'manage_users'
-  | 'manage_roles'
-  | 'manage_settings'
-  | 'manage_currencies'
-  | 'manage_content'
-  | 'view_audit';
+const STORAGE_KEY = 'bustour-admin-nav-open';
 
 type NavLeaf = {
   kind: 'leaf';
