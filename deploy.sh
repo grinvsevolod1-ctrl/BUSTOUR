@@ -98,6 +98,17 @@ fi
 log "npm ci"
 npm ci --include=dev --no-audit --no-fund
 
+# --- 3b. sharp: пересборка из исходников при несовместимом CPU -----------------
+# Prebuilt-бинарники sharp требуют x86-64-v2; на старых CPU падают с
+# "Prebuilt binaries for linux-x64 require v2 microarchitecture".
+# В этом случае пересобираем sharp из исходников против системного libvips
+# (нужны: build-essential python3 pkg-config libvips-dev node-addon-api node-gyp).
+if ! node -e "require('sharp')" >/dev/null 2>&1; then
+  log "sharp: prebuilt-бинарник не загрузился — пересборка из исходников"
+  npm rebuild sharp --build-from-source
+  node -e "const s=require('sharp'); console.log('sharp OK:', JSON.stringify(s.versions))"
+fi
+
 # --- 4. Сборка ----------------------------------------------------------------
 log "next build"
 npm run build
