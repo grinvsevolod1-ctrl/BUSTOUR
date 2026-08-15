@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Next.js
+.next/
+out/
+dist/
+.nuxt/
+
+# Production
+build/
+dist/
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.continue/
+.trae/
+.kilo/
+
+# Temporary
+*.tmp
+*.temp
+tsconfig.tsbuildinfo
+
+# Aider
+.aider*
+
+# Uploads (media files - они большие)
+public/uploads/
+
+# Git hooks
+.githooks/
+.git/

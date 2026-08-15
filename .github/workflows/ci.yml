@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TELEMETRY_DISABLED: "1"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  preflight:
+    name: Preflight (env / tsc / selfchecks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund || npm install --no-audit --no-fund
+
+      - name: Preflight static checks
+        id: preflight
+        run: npx tsx scripts/preflight.ts --check --strict-selfcheck
+        env:
+          BUSTOUR_DEPLOY_ENV: local
+          CI: "true"
+
+      - name: Upload preflight artifacts (errors report)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preflight-errors
+          path: |
+            .preflight/errors.json
+            .preflight/preflight.log
+          if-no-files-found: ignore
+
+      - name: Preflight summary
+        if: always()
+        run: |
+          if [ -f .preflight/errors.json ]; then
+            echo "--- Preflight Report ---"
+            cat .preflight/errors.json
+          else
+            echo "(no preflight report file found)"
+          fi
+
+  build:
+    name: Build (Next.js)
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund || npm install --no-audit --no-fund
+
+      - name: Build with warnings capture
+        id: build
+        run: |
+          set +e
+          npx tsx scripts/preflight.ts --build --strict-selfcheck
+          code=$?
+          echo "build_exit_code=$code" >> $GITHUB_OUTPUT
+          echo "---"
+          if [ -f .preflight/preflight.log ]; then
+            echo "Preflight short log:"
+            cat .preflight/preflight.log
+          fi
+          exit $code
+        env:
+          BUSTOUR_DEPLOY_ENV: staging
+          CI: "true"
+          NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
+
+      - name: Upload build artifacts (report / .next output)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-report
+          path: |
+            .preflight/errors.json
+            .preflight/preflight.log
+          if-no-files-found: ignore

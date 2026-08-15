@@ -1,0 +1,53 @@
+﻿Starting DEV-stand VPS deploy (2.27.5.122)...
+Target is NOT production. Prod = Vercel / .env.prod.example
+
+Creating archive...
+SSH/SFTP to 2.27.5.122 ...
+Uploading .env.vps → /root/bastur-app/.env.vps → rename → /root/bastur-app/.env ...
+Uploading archive...
+Extract + docker compose up --build (timeout 1800s)...
+
+--- docker compose ps ---
+NAME         IMAGE                   COMMAND                  SERVICE      CREATED       STATUS       PORTS
+bastur_app   bastur-app-bastur-app   "docker-entrypoint.s…"   bastur-app   2 hours ago   Up 2 hours   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+
+--- docker logs --tail 40 bastur_app (container) ---
+▲ Next.js 16.2.12
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+NBRB currency refresh failed Error [TimeoutError]: The operation was aborted due to timeout
+    at async b (.next/server/chunks/ssr/[root-of-the-server]__1nw-vaz._.js:1:2205)
+    at async (.next/server/chunks/ssr/[root-of-the-server]__1nw-vaz._.js:1:2816)
+    at async c (.next/server/chunks/ssr/[root-of-the-server]__1nw-vaz._.js:1:2711)
+    at async g (.next/server/chunks/ssr/[root-of-the-server]__1nw-vaz._.js:1:4068)
+    at async m (.next/server/chunks/ssr/_15iv2ez._.js:1:8143) {
+  code: 23,
+  INDEX_SIZE_ERR: 1,
+  DOMSTRING_SIZE_ERR: 2,
+  HIERARCHY_REQUEST_ERR: 3,
+  WRONG_DOCUMENT_ERR: 4,
+  INVALID_CHARACTER_ERR: 5,
+  NO_DATA_ALLOWED_ERR: 6,
+  NO_MODIFICATION_ALLOWED_ERR: 7,
+  NOT_FOUND_ERR: 8,
+  NOT_SUPPORTED_ERR: 9,
+  INUSE_ATTRIBUTE_ERR: 10,
+  INVALID_STATE_ERR: 11,
+  SYNTAX_ERR: 12,
+  INVALID_MODIFICATION_ERR: 13,
+  NAMESPACE_ERR: 14,
+  INVALID_ACCESS_ERR: 15,
+  VALIDATION_ERR: 16,
+  TYPE_MISMATCH_ERR: 17,
+  SECURITY_ERR: 18,
+  NETWORK_ERR: 19,
+  ABORT_ERR: 20,
+  URL_MISMATCH_ERR: 21,
+  QUOTA_EXCEEDED_ERR: 22,
+  TIMEOUT_ERR: 23,
+  INVALID_NODE_TYPE_ERR: 24,
+  DATA_CLONE_ERR: 25
+}
+
+DEV-stand deploy OK. App: http://2.27.5.122:3000 (NOT production)

@@ -1,0 +1,219 @@
+﻿✓ Created 100 countries in 110 ms
+✓ Created 100 cities in 94 ms
+✓ Created 100 shortcodes in 75 ms
+✓ Created 100 content blocks (advantages) in 104 ms
+✓ Teardown 400 records in 243 ms
+
+== QA PERF SUMMARY ==
+Records: 400 creates + 400 purges
+Wall time total: 737 ms (0.7 s)
+Throughput: 1085.8 ops/sec (create+purge total)
+RSS delta: 113 MB → 149 MB (Δ 36 MB)
+HeapUsed delta: 28 MB → 40 MB (Δ 12 MB)
+npx : ✗ ERRORS (100):
+At line:15 char:8389
++ ... ur latest'; npx --yes tsx scripts/qa-mass-create-100.selfcheck.ts 2>& ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (✗ ERRORS (100)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 
+  - purge block undefined: Error: Failed query: delete from "content_blocks" where "content_blocks"."id" = ?
+params: 

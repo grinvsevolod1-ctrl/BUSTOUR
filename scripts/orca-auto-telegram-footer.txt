@@ -1,0 +1,10 @@
+TELEGRAM FOOTER (append to every Bustour automation prompt):
+
+---
+TELEGRAM LOG (обязательно в самом конце, даже при skip/fail):
+1) Собери краткий лог на русском (статус ok|fail|skip|blocked + 3–8 строк: что сделано, ветка/issue/PR, next).
+2) Отправь:
+   npx tsx scripts/telegram-notify.ts --title "bustour/<AUTO_NAME>" --body "<лог>"
+3) Если отправка упала — напиши ошибку в финальном ответе (не коммить секреты).
+Не используй MCP если CLI доступен — CLI предпочтителен для autos.
+---

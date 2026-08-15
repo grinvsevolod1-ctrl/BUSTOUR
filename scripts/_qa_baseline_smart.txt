@@ -1,0 +1,61 @@
+﻿[SmartTest] Selfcheck (all (incl. DB/server)): 195 files
+
+== scripts/admin-api.selfcheck.ts ==
+[32m✓[0m Zod: slugSchema rejects Bad_Slug / кириллицу
+[32m✓[0m Zod: tourSaveSchema / busSaveSchema / review STI
+[32m✓[0m mapDbError: unique slug → readable message
+[32m✓[0m CRUD: createTour + read + archive (slug release)
+[32m✓[0m preflight: findTourIdBySlug blocks duplicate live slug
+[32m✓[0m preflight: findArticleIdBySlug
+[32m✓[0m CRUD: createBus + archive
+[32m✓[0m CRUD: TEXT + VIDEO reviews in one table
+[32m✓[0m Guard: purgeCountry blocked while tour exists
+[32m✓[0m Cleanup hard-delete
+[32madmin-api selfcheck: ok[0m
+== scripts/admin-collapsible-sections.selfcheck.ts ==
+admin-collapsible-sections.selfcheck: ok
+== scripts/admin-cookie-secure.selfcheck.ts ==
+ok
+== scripts/admin-nav-sidebar.selfcheck.ts ==
+admin-nav-sidebar.selfcheck: ok
+== scripts/admin-open-href.selfcheck.ts ==
+admin-open-href.selfcheck ok
+== scripts/admin-order-contacts.selfcheck.ts ==
+admin-order-contacts.selfcheck: ok
+== scripts/admin-roles.selfcheck.ts ==
+admin-roles.selfcheck: ok
+== scripts/admin-table-cols.selfcheck.ts ==
+ok
+== scripts/admin-tables-ux.selfcheck.ts ==
+npx : node:internal/modules/run_main:107
+At line:15 char:8389
++ ... ur latest'; npx --yes tsx scripts/smart-test.ts --all-selfcheck --sel ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (node:internal/modules/run_main:107:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Авиатуры > Главная: orphan FormSection «Секция «Таблица»»
+    at assert (Z:\bustour\bustour latest\scripts\admin-tables-ux.selfcheck.ts:29:12)
+    at Object.<anonymous> (Z:\bustour\bustour latest\scripts\admin-tables-ux.selfcheck.ts:66:44)
+    at Module._compile (node:internal/modules/cjs/loader:1811:14)
+    at Object.transformer (Z:\bustour\bustour latest\node_modules\tsx\dist\register-BoI6-WNn.cjs:9:3252)
+    at Module.load (node:internal/modules/cjs/loader:1532:32)
+    at Module._load (node:internal/modules/cjs/loader:1334:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:327:3)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:232:7)
+    at ModuleJob.run (node:internal/modules/esm/module_job:430:25) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'Секция «Таблица»',
+  expected: 'Секция «Таблица»',
+  operator: 'notStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.6.1
+
+[SmartTest] Selfcheck failed: scripts/admin-tables-ux.selfcheck.ts (exit 1)

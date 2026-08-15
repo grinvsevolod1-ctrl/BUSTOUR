@@ -1,0 +1,11 @@
+﻿[32m✓[0m admin actions: approve + showOn + edit redirect
+[32m✓[0m public POST /api/review: pending + captcha required
+[32m✓[0m holiday import: button + parse module
+[32m✓[0m holiday HTML fixture parse + dedupe id
+[32m✓[0m sanitizeReviewShowOn strips tour without link
+[32m✓[0m captcha skips when keys unset (free testing)
+[32m✓[0m site-like create → pending in admin filters
+[32m✓[0m approve → public list
+[32m✓[0m showOn tour locked without tour; unlocked with tour
+[32m✓[0m multi-photo persist + holiday import create
+review-lifecycle.selfcheck: ok
