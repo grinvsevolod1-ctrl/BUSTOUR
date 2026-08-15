@@ -1,17 +1,17 @@
 {
-  "startedAt": "2026-08-15T11:39:25.143Z",
-  "finishedAt": "2026-08-15T11:39:35.485Z",
+  "startedAt": "2026-08-15T12:00:52.583Z",
+  "finishedAt": "2026-08-15T12:01:22.295Z",
   "errors": [],
   "warnings": [
     {
       "stage": "selfcheck",
       "severity": "warning",
-      "file": "/vercel/share/v0-project/scripts/bus-transfer-atomic-save.selfcheck.ts",
+      "file": "/vercel/share/v0-project/scripts/rate-limit.selfcheck.ts",
       "line": null,
       "column": null,
       "code": "SELFCHECK_FAIL",
-      "message": " | [SmartTest] Selfcheck failed: scripts/bus-transfer-atomic-save.selfcheck.ts (exit 1) | ",
-      "raw": "    ' * Исторически это был монолит на ~1600 строк. Код разнесён по доменным модулям\\n' +\n    ' * в lib/queries/, а этот файл сохраняет обратную совместимость: все существующие\\n' +\n    ' * импорты `@/lib/queries` продолжают работать без изменений.\\n' +\n    ' *\\n' +\n    ' * Новый код может импортировать доменные модули напрямую:\\n' +\n    ' *   import { getTours } from \"@/lib/queries/tours\"\\n' +\n    ' */\\n' +\n    '...',\n  expected: /export async function createBus\\([^)]*executor\\s*:\\s*DbExecutor\\s*=\\s*db/,\n  operator: 'match',\n  diff: 'simple'\n}\n\n[SmartTest] Selfcheck failed: scripts/bus-transfer-atomic-save.selfcheck.ts (exit 1)\n"
+      "message": " | [SmartTest] Selfcheck failed: scripts/rate-limit.selfcheck.ts (exit 1) | ",
+      "raw": "    at Object.<anonymous> (/vercel/share/v0-project/node_modules/server-only/index.js:1:7)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object.transformer (/vercel/share/v0-project/node_modules/tsx/dist/register-C557imBs.cjs:9:3619)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1600:12)\n    at require (node:internal/modules/helpers:153:16)\n    at <anonymous> (/vercel/share/v0-project/lib/rate-limit.ts:1:8)\n    at Object.<anonymous> (/vercel/share/v0-project/lib/rate-limit.ts:82:17)\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/rate-limit.selfcheck.ts (exit 1)\n"
     }
   ],
   "totals": {

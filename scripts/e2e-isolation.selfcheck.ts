@@ -14,6 +14,16 @@ function read(rel: string) {
   return fs.readFileSync(path.join(root, rel), "utf8")
 }
 
+/** Local-only specs/scripts may be absent on a fresh clone — validate only when present. */
+function readOptional(rel: string): string | null {
+  const abs = path.join(root, rel)
+  if (!fs.existsSync(abs)) {
+    console.log(`e2e-isolation.selfcheck: ${rel} not found, skipping (local-only file)`)
+    return null
+  }
+  return fs.readFileSync(abs, "utf8")
+}
+
 function fail(msg: string) {
   failures.push(msg)
 }
@@ -35,36 +45,39 @@ function fail(msg: string) {
 
 // --- page-alerts: snapshot/restore in finally ---
 {
-  const src = read("e2e/page-alerts.spec.ts")
-  const hasSnap =
-    /withSettingsSnapshot/.test(src) ||
-    (/finally\s*\{/.test(src) && /alertText|alertBox\.fill\(""\)|restore/.test(src))
-  if (!hasSnap) {
-    fail("e2e/page-alerts.spec.ts must snapshot/restore alertText (withSettingsSnapshot or finally restore)")
-  }
-  if (/test\([^)]*clear alert/.test(src) && !/finally\s*\{/.test(src) && !/withSettingsSnapshot/.test(src)) {
-    fail("e2e/page-alerts.spec.ts: cleanup-only serial clear tests are forbidden — use finally")
+  const src = readOptional("e2e/page-alerts.spec.ts")
+  if (src !== null) {
+    const hasSnap =
+      /withSettingsSnapshot/.test(src) ||
+      (/finally\s*\{/.test(src) && /alertText|alertBox\.fill\(""\)|restore/.test(src))
+    if (!hasSnap) {
+      fail("e2e/page-alerts.spec.ts must snapshot/restore alertText (withSettingsSnapshot or finally restore)")
+    }
+    if (/test\([^)]*clear alert/.test(src) && !/finally\s*\{/.test(src) && !/withSettingsSnapshot/.test(src)) {
+      fail("e2e/page-alerts.spec.ts: cleanup-only serial clear tests are forbidden — use finally")
+    }
   }
 }
 
 // --- shortcode seed/smoke: must restore settings ---
 {
-  const seed = read("scripts/seed-page-seo-shortcode.ts")
-  const smoke = read("scripts/smoke-page-shortcodes.ts")
-  const shortcodes = read("e2e/public-shortcodes.spec.ts")
+  const seed = readOptional("scripts/seed-page-seo-shortcode.ts")
+  const smoke = readOptional("scripts/smoke-page-shortcodes.ts")
+  const shortcodes = readOptional("e2e/public-shortcodes.spec.ts")
   const restoreHint =
     /withSettingsSnapshot|seedPageSeoWithRestore|RESTORE|restoreSettings|SEO_RESTORE|snapshot|previous|prevSeo|finally/
-  if (!restoreHint.test(seed) && !restoreHint.test(smoke) && !restoreHint.test(shortcodes)) {
+  const present = [seed, smoke, shortcodes].filter((s): s is string => s !== null)
+  if (present.length > 0 && !present.some((s) => restoreHint.test(s))) {
     fail(
       "seed-page-seo-shortcode / smoke-page-shortcodes / public-shortcodes must restore seoTitle (snapshot/finally)",
     )
   }
   // Live overwrite without restore helper in seed alone is OK if callers wrap with restore —
   // but smoke and e2e must not call seed without restore.
-  if (/seed-page-seo-shortcode/.test(smoke) && !restoreHint.test(smoke)) {
+  if (smoke !== null && /seed-page-seo-shortcode/.test(smoke) && !restoreHint.test(smoke)) {
     fail("scripts/smoke-page-shortcodes.ts seeds live SEO without restore")
   }
-  if (/seed-page-seo-shortcode|function seed\(/.test(shortcodes) && !restoreHint.test(shortcodes)) {
+  if (shortcodes !== null && /seed-page-seo-shortcode|function seed\(/.test(shortcodes) && !restoreHint.test(shortcodes)) {
     fail("e2e/public-shortcodes.spec.ts seeds live SEO without restore")
   }
 }
@@ -104,20 +117,26 @@ for (const file of fs.readdirSync(e2eDir).filter((f) => f.endsWith(".spec.ts")))
 
 // --- archive.spec must not archive first live seed tour ---
 {
-  const src = read("e2e/archive.spec.ts")
-  if (/No tour with a live public URL|rows\.nth\(rowIndex\)/.test(src) && !/E2E Archive Tour|makeFixtureIds|createBusTour/.test(src)) {
+  const src = readOptional("e2e/archive.spec.ts")
+  if (
+    src !== null &&
+    /No tour with a live public URL|rows\.nth\(rowIndex\)/.test(src) &&
+    !/E2E Archive Tour|makeFixtureIds|createBusTour/.test(src)
+  ) {
     fail("e2e/archive.spec.ts tour case must use disposable E2E fixture tour, not first live seed tour")
   }
 }
 
 // --- admin-roles: qa_* users must be purged ---
 {
-  const src = read("e2e/admin-roles-audit.spec.ts")
-  if (/qa_\$\{/.test(src) && !/purgeAdminUser|purgeAdminByUsername|Удалить навсегда/.test(src)) {
-    fail("e2e/admin-roles-audit.spec.ts creates qa_* users without soft-delete+purge")
-  }
-  if (/qa_\$\{/.test(src) && !/finally\s*\{/.test(src)) {
-    fail("e2e/admin-roles-audit.spec.ts must purge qa_* in finally")
+  const src = readOptional("e2e/admin-roles-audit.spec.ts")
+  if (src !== null) {
+    if (/qa_\$\{/.test(src) && !/purgeAdminUser|purgeAdminByUsername|Удалить навсегда/.test(src)) {
+      fail("e2e/admin-roles-audit.spec.ts creates qa_* users without soft-delete+purge")
+    }
+    if (/qa_\$\{/.test(src) && !/finally\s*\{/.test(src)) {
+      fail("e2e/admin-roles-audit.spec.ts must purge qa_* in finally")
+    }
   }
 }
 

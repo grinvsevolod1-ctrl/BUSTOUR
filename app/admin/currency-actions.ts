@@ -94,7 +94,14 @@ export async function refreshCurrencyRatesAction(_prev: unknown, formData: FormD
       revalidate: REVALIDATE,
     },
     async () => {
-      const result = await refreshCurrenciesFromNbrb(markupPercent)
+      let result: Awaited<ReturnType<typeof refreshCurrenciesFromNbrb>>
+      try {
+        result = await refreshCurrenciesFromNbrb(markupPercent)
+      } catch (err) {
+        // Network/parse failures must be visible both in logs and in the action error.
+        console.error("NBRB currency refresh failed", err)
+        throw err
+      }
       await saveMarkupPercent(markupPercent)
       const skipped = result.skipped.length ? ` Не найдены в справочнике: ${result.skipped.join(", ")}.` : ""
       return {

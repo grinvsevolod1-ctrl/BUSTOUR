@@ -1,10 +1,26 @@
 /**
  * Selfcheck: lib/rate-limit — брутфорс-защита логина и антиспам форм.
- * Запуск: npx tsx --conditions=react-server scripts/rate-limit.selfcheck.ts
- * (react-server условие нужно из-за import "server-only" в модуле)
+ * Запуск: npx tsx scripts/rate-limit.selfcheck.ts
+ * (сам перезапускается с --conditions=react-server, которое нужно
+ *  из-за import "server-only" в модуле)
  */
 import assert from "node:assert/strict"
-import { consumeRateLimit, resetRateLimit, clientIpFromHeaders } from "../lib/rate-limit"
+
+// lib/rate-limit imports "server-only": without the react-server condition the
+// import throws. When launched by a generic runner (SmartTest), re-exec self
+// with the right condition instead of failing.
+if (!process.execArgv.some((a) => a.includes("react-server")) && !process.env.RATE_LIMIT_SELFCHECK_REEXEC) {
+  const { spawnSync } = require("node:child_process") as typeof import("node:child_process")
+  const result = spawnSync("npx", ["tsx", "--conditions=react-server", __filename], {
+    stdio: "inherit",
+    env: { ...process.env, RATE_LIMIT_SELFCHECK_REEXEC: "1" },
+  })
+  process.exit(result.status ?? 1)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { consumeRateLimit, resetRateLimit, clientIpFromHeaders } = require("../lib/rate-limit") as
+  typeof import("../lib/rate-limit")
 
 // --- consumeRateLimit: базовое окно ---
 {
