@@ -65,24 +65,39 @@ function gatePreviewQuery(request: NextRequest): NextResponse | null {
   return null
 }
 
+/**
+ * Marks the self-proxied avia rewrite so the second middleware pass
+ * (Next standalone proxies the rewrite as a real HTTP request behind
+ * nginx) serves /aviatory directly instead of 301-ing back — otherwise
+ * /aviatury → /aviatury loops forever.
+ */
+const AVIA_REWRITE_HEADER = "x-bastur-avia-rewrite"
+
 export async function middleware(request: NextRequest) {
   const previewGate = gatePreviewQuery(request)
   if (previewGate) return previewGate
 
   const { pathname } = request.nextUrl
+
+  // Second pass of a self-proxied avia rewrite: serve /aviatory as-is.
+  if (request.headers.get(AVIA_REWRITE_HEADER) === "1") {
+    return NextResponse.next()
+  }
+
   const aviaSlug = await getAviaSlug()
 
   // 1. Requests to /{aviaSlug}... → rewrite to /aviatory/...
   if (pathname === `/${aviaSlug}` || pathname.startsWith(`/${aviaSlug}/`)) {
     const rewritten = pathname.replace(`/${aviaSlug}`, "/aviatory")
-    // ВАЖНО: rewrite строго на том же origin запроса (nextUrl.clone) —
-    // тогда Next обрабатывает его внутренне, без нового HTTP-запроса.
-    // Rewrite на 127.0.0.1 превращается в self-proxy: запрос снова проходит
-    // через middleware уже с /aviatory и ветка 2 отвечает 301 → бесконечный
-    // цикл редиректов /aviatury → /aviatury.
-    const url = request.nextUrl.clone()
-    url.pathname = rewritten || "/aviatory/"
-    return NextResponse.rewrite(url)
+    // Rewrite на loopback по HTTP: за nginx nextUrl нормализуется в
+    // https://localhost:3000, и same-origin rewrite всё равно проксируется
+    // самому себе по TLS на HTTP-порт (EPROTO → 500). Заголовок-маркер
+    // прерывает петлю на втором проходе middleware.
+    const url = new URL(rewritten || "/aviatory/", INTERNAL_ORIGIN)
+    url.search = request.nextUrl.search
+    const headers = new Headers(request.headers)
+    headers.set(AVIA_REWRITE_HEADER, "1")
+    return NextResponse.rewrite(url, { request: { headers } })
   }
 
   // 2. Requests to /aviatory/... → 301 redirect to /{aviaSlug}/...
