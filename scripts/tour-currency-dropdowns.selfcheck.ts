@@ -1,11 +1,12 @@
 // T2: Tour edit form - валюты выбираются select/dropdown из админского списка currencies вместо статичных текстовых инпутов.
 import { readFileSync } from "node:fs"
 import assert from "node:assert/strict"
+import { readQueriesSource } from "./lib/read-queries-source"
 
 const additional = readFileSync("components/admin/tour-additional-block.tsx", "utf8")
 const tourForm = readFileSync("components/admin/tour-form.tsx", "utf8")
 const actions = readFileSync("app/admin/actions.ts", "utf8")
-const queries = readFileSync("lib/queries.ts", "utf8")
+const queries = readQueriesSource()
 
 // T2a: TourAdditionalBlock принимает currencies проп
 assert.ok(/currencies\?.*Currency\[\]/.test(additional) || /props.*currencies.*=/.test(additional) || /currencies=\{currencies\}/.test(tourForm),

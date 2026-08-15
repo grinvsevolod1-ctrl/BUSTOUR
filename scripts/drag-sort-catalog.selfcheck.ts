@@ -8,6 +8,8 @@ import os from "node:os"
 import path from "node:path"
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
+import { readQueriesSource } from "./lib/read-queries-source"
+import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
 
 const root = process.cwd()
 
@@ -16,7 +18,8 @@ function src(rel: string) {
 }
 
 function mustHave(rel: string, needles: string[]) {
-  const body = src(rel)
+  // lib/queries.ts is a barrel — inspect it together with lib/queries/* modules
+  const body = rel === "lib/queries.ts" ? readQueriesSource(root) : src(rel)
   for (const needle of needles) {
     assert.ok(body.includes(needle), `${rel} missing «${needle}»`)
   }
@@ -57,7 +60,6 @@ assert.ok(
 
 async function main() {
   const dbFile = path.join(os.tmpdir(), `bustour-drag-sort-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
 
   const { ensureDb } = await import("../lib/db/init")
   const { eq } = await import("drizzle-orm")
@@ -385,6 +387,11 @@ async function main() {
   }
 
   console.log("ok")
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("drag-sort-catalog.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

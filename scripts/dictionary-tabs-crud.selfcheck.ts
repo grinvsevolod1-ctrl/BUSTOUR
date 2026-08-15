@@ -6,7 +6,8 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import {
+import {import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
+
   DICTIONARY_PAGE_CMS_KEY,
   DICTIONARY_TABS_ORDER_KEY,
   dictionaryAdminRows,
@@ -56,7 +57,6 @@ function parseReorderFormData(formData: FormData, current: string[]): string[] |
 
 async function main() {
   const dbFile = path.join(os.tmpdir(), `bustour-dictionary-crud-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
 
   const { ensureDb } = await import("../lib/db/init")
   const { getSettings, saveSettings } = await import("../lib/cms")
@@ -166,6 +166,11 @@ async function main() {
       /* ignore */
     }
   }
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("dictionary-tabs-crud.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

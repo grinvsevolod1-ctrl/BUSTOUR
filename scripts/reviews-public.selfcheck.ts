@@ -4,6 +4,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import type { Review } from "@/lib/types"
 import { formatReviewDisplayDate, reviewShowsOn } from "@/lib/review-admin"
+import { readQueriesSource } from "./lib/read-queries-source"
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..")
 
@@ -46,7 +47,7 @@ assert.ok(
   "admin TEXT review form must allow multiple photos",
 )
 
-const queries = fs.readFileSync(path.join(root, "lib/queries.ts"), "utf8")
+const queries = readQueriesSource(root)
 assert.ok(
   queries.includes("input.sourceDate?.trim() || new Date().toISOString().slice(0, 10)"),
   "createReview must default sourceDate for manual reviews",

@@ -9,6 +9,7 @@ import { dateRangeOrderError, isDateRangeOrdered } from "@/lib/dates-table"
 import { isRecaptchaEnabled } from "@/lib/recaptcha-public"
 import { tourUrl } from "@/lib/tour-url"
 import { resolveHotPublicHref } from "@/lib/hot-slug"
+import { readQueriesSource } from "./lib/read-queries-source"
 
 // tourUrl still requires country+city
 assert.equal(tourUrl({ tourSlug: "x", countrySlug: "rossiya", citySlug: "" }), null)
@@ -48,7 +49,7 @@ const schema = fs.readFileSync(path.join(root, "lib/db/schema.ts"), "utf8")
 assert.ok(schema.includes('arrivalCityId: integer("arrivalCityId").notNull().references'), "arrivalCityId required FK")
 assert.ok(init.includes("arrivalCityId:"), "seed sets arrivalCityId")
 
-const queries = fs.readFileSync(path.join(root, "lib/queries.ts"), "utf8")
+const queries = readQueriesSource(root)
 assert.ok(queries.includes("getHomeTourOffers"), "home tour offers")
 assert.ok(queries.includes("leftJoin(cityDestinations, eq(tours.arrivalCityId"), "getTour joins city")
 

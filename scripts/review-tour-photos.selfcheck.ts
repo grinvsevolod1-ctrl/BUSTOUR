@@ -7,7 +7,8 @@ import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-import {
+import {import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
+
   parseReviewPhotoUrls,
   reviewHasLinkedTour,
   serializeReviewPhotoUrls,
@@ -49,7 +50,6 @@ assert.deepEqual(parseReviewPhotoUrls('["/1.jpg","/2.jpg"]'), ["/1.jpg", "/2.jpg
 
 async function main() {
   const dbFile = path.join(os.tmpdir(), `bustour-review-tour-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
   const { ensureDb } = await import("../lib/db/init")
   const { createReview, getReviewById, updateReview, setReviewShowOn } = await import("../lib/queries")
   await ensureDb()
@@ -100,6 +100,11 @@ async function main() {
     /* ignore */
   }
   console.log("review-tour-photos.selfcheck: ok")
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("review-tour-photos.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

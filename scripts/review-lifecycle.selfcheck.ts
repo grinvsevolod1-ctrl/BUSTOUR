@@ -16,7 +16,8 @@ import {
   serializeReviewPhotoUrls,
 } from "../lib/review-admin"
 import { holidaySourceId, parseHolidayReviewsHtml } from "../lib/holiday-reviews"
-import { verifyRecaptchaToken } from "../lib/recaptcha"
+import { verifyRecaptchaToken } from "../lib/recaptcha"import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
+
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..")
 const read = (rel: string) => fs.readFileSync(path.join(root, rel), "utf8")
@@ -101,7 +102,6 @@ async function main() {
   })
 
   const dbFile = path.join(os.tmpdir(), `bustour-review-lifecycle-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
   const { ensureDb } = await import("../lib/db/init")
   const {
     createReview,
@@ -236,6 +236,11 @@ async function main() {
       /* ignore */
     }
   }
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("review-lifecycle.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

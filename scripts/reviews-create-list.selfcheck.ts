@@ -7,7 +7,8 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import {
+import {import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
+
   DEFAULT_REVIEW_LIST_FILTERS,
   filterAndSortReviews,
 } from "../lib/review-admin"
@@ -18,7 +19,6 @@ assert.match(formSrc, /reviews-list/)
 
 async function main() {
   const dbFile = path.join(os.tmpdir(), `bustour-reviews-create-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
 
   const { ensureDb } = await import("../lib/db/init")
   const { createReview, getReviews, purgeReview } = await import("../lib/queries")
@@ -55,6 +55,11 @@ async function main() {
   }
 
   console.log("reviews-create-list.selfcheck: ok")
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("reviews-create-list.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

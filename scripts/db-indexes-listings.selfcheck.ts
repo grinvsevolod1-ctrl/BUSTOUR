@@ -6,6 +6,7 @@ import assert from "node:assert/strict"
 import path from "node:path"
 import fs from "node:fs"
 import { createClient } from "@libsql/client"
+import { readQueriesSource } from "./lib/read-queries-source"
 
 const REQUIRED = [
   "tours_archived_category_idx",
@@ -81,7 +82,7 @@ async function main() {
   )
 
   // Listing helpers must not full-load then filter in JS for home/bus
-  const queriesSrc = fs.readFileSync(path.join(process.cwd(), "lib", "queries.ts"), "utf8")
+  const queriesSrc = readQueriesSource(process.cwd())
   assert.match(queriesSrc, /async function listTours/, "listTours helper present")
   assert.match(queriesSrc, /excludeHidden/, "SQL path supports hidden exclusion")
   assert.doesNotMatch(

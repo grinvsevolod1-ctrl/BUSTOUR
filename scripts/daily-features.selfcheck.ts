@@ -11,6 +11,7 @@ import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
 import { eq, inArray } from "drizzle-orm"
+import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
 
 const GREEN = "\x1b[32m"
 const RED = "\x1b[31m"
@@ -67,7 +68,6 @@ function emptyTour(overrides: {
 
 async function main() {
   const dbFile = path.join(os.tmpdir(), `bustour-daily-features-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
 
   const { ensureDb } = await import("../lib/db/init")
   const { db } = await import("../lib/db")
@@ -257,6 +257,11 @@ async function main() {
   }
 
   console.log(`${GREEN}daily-features selfcheck: ok${RESET}`)
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("daily-features.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

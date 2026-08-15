@@ -5,11 +5,11 @@
 import assert from "node:assert/strict"
 import fs from "node:fs"
 import os from "node:os"
-import path from "node:path"
+import path from "node:path"import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
+
 
 async function main() {
   const dbFile = path.join(os.tmpdir(), `bustour-tour-archive-restore-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
 
   const { ensureDb } = await import("../lib/db/init")
   const { createTour, deleteTour, restoreTour, getTours, getArchivedTours, getTour } =
@@ -93,6 +93,11 @@ async function main() {
     /* ignore */
   }
   console.log("tour-archive-restore selfcheck: ok")
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("tour-archive-restore.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

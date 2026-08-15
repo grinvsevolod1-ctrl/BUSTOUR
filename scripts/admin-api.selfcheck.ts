@@ -16,6 +16,7 @@ import {
 } from "../lib/validations/admin"
 import { mapDbError } from "../lib/db-errors"
 import { reviewInputSchema } from "../lib/review-schema"
+import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
 
 const GREEN = "\x1b[32m"
 const RED = "\x1b[31m"
@@ -91,7 +92,6 @@ async function main() {
   })
 
   const dbFile = path.join(os.tmpdir(), `bustour-admin-api-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
 
   const { ensureDb } = await import("../lib/db/init")
   const { db } = await import("../lib/db")
@@ -278,6 +278,11 @@ async function main() {
   }
 
   console.log(`${GREEN}admin-api selfcheck: ok${RESET}`)
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("admin-api.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {

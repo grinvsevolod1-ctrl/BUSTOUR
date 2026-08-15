@@ -6,14 +6,14 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import { toArchivedSlug } from "../lib/archive-slug"
+import { toArchivedSlug } from "../lib/archive-slug"import { hasSelfcheckPostgres, skipRuntimeMessage } from "./lib/selfcheck-db"
+
 
 assert.equal(toArchivedSlug("paris", 1000), "paris-archived-1000")
 assert.equal(toArchivedSlug("paris-archived-1000", 2000), "paris-archived-1000")
 
 async function main() {
   const dbFile = path.join(os.tmpdir(), `bustour-soft-delete-${Date.now()}.db`)
-  process.env.DATABASE_URL = `file:${dbFile}`
 
   const { ensureDb } = await import("../lib/db/init")
   const {
@@ -318,6 +318,11 @@ async function main() {
   }
 
   console.log("soft-delete entities selfcheck: ok")
+}
+
+if (!hasSelfcheckPostgres()) {
+  console.log(skipRuntimeMessage("soft-delete-entities.selfcheck.ts"))
+  process.exit(0)
 }
 
 main().catch((err) => {
