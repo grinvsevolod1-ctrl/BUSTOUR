@@ -1,5 +1,6 @@
 import { applyMarkupToRate, bynPerUnitToRate, fetchOfficialRates } from "@/lib/nbrb-rates"
 import type { Currency } from "@/lib/types"
+import { moveSortable, type MoveDirection } from "@/lib/queries/move"
 
 type CurrencyRow = {
   id: number
@@ -168,20 +169,14 @@ export async function updateCurrency(id: number, input: CurrencyInput) {
 }
 
 /** Swap sortOrder with neighbour currency. Normalizes duplicate orders. */
-export async function moveCurrency(id: number, direction: "up" | "down") {
+export async function moveCurrency(id: number, direction: MoveDirection) {
   const { asc, eq, db, currencies, ensureDb } = await getCurrencyDbContext()
   await ensureDb()
   const siblings = await db.select().from(currencies).orderBy(asc(currencies.sortOrder), asc(currencies.id))
-  const index = siblings.findIndex((c) => c.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
-  const ordered = [...siblings]
-  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
-  for (let i = 0; i < ordered.length; i++) {
-    if (ordered[i].sortOrder !== i) {
-      await db.update(currencies).set({ sortOrder: i }).where(eq(currencies.id, ordered[i].id))
-    }
-  }
+  // Ленивый контекст БД — без транзакции, поэтому пишем через moveSortable.
+  await moveSortable(siblings, id, direction, async (rowId, sortOrder) => {
+    await db.update(currencies).set({ sortOrder }).where(eq(currencies.id, rowId))
+  })
 }
 
 export async function deleteCurrency(id: number) {

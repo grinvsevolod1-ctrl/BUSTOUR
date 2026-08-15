@@ -27,6 +27,7 @@ import {
 } from "@/lib/media/node"
 import { toPublicReview } from "@/lib/review-utils"
 import { parseJson, mapTour, assembleDatesTables, type DatesTourMeta } from "./_shared"
+import { computeSwapUpdates, type MoveDirection } from "./move"
 
 type ListToursOpts = {
   /** Soft-delete filter. Default: false (live). */
@@ -234,7 +235,7 @@ export async function updateTour(id: number, input: TourInput) {
 }
 
 /** Swap sortOrder with neighbour in the same country group (admin accordion). */
-export async function moveTour(id: number, direction: "up" | "down") {
+export async function moveTour(id: number, direction: MoveDirection) {
   await ensureDb()
   const [current] = await db.select().from(tours).where(eq(tours.id, id)).limit(1)
   if (!current || current.archived) return
@@ -249,12 +250,13 @@ export async function moveTour(id: number, direction: "up" | "down") {
       ),
     )
     .orderBy(asc(tours.sortOrder), asc(tours.id))
-  const index = siblings.findIndex((t) => t.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (swapIndex < 0 || swapIndex >= siblings.length) return
-  const neighbour = siblings[swapIndex]
-  await db.update(tours).set({ sortOrder: neighbour.sortOrder }).where(eq(tours.id, current.id))
-  await db.update(tours).set({ sortOrder: current.sortOrder }).where(eq(tours.id, neighbour.id))
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
+  await db.transaction(async (tx) => {
+    for (const u of updates) {
+      await tx.update(tours).set({ sortOrder: u.sortOrder }).where(eq(tours.id, u.id))
+    }
+  })
 }
 
 /**

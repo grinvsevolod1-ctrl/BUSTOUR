@@ -27,6 +27,7 @@ import {
 } from "@/lib/media/node"
 import { toPublicReview } from "@/lib/review-utils"
 import { parseJson, mapBus } from "./_shared"
+import { computeSwapUpdates, type MoveDirection } from "./move"
 export async function getBuses(): Promise<Bus[]> {
   await ensureDb()
   const rows = await db
@@ -108,8 +109,8 @@ export async function updateBus(id: number, input: BusInput, executor: DbExecuto
   await executor.update(buses).set(serializeBus(input)).where(eq(buses.id, id))
 }
 
-/** Swap sortOrder with neighbour in the active fleet list. */
-export async function moveBus(id: number, direction: "up" | "down") {
+/** Swap sortOrder with neighbour in the active fleet list. Normalizes duplicate orders. */
+export async function moveBus(id: number, direction: MoveDirection) {
   await ensureDb()
   const [current] = await db.select().from(buses).where(eq(buses.id, id)).limit(1)
   if (!current || current.archived) return
@@ -118,12 +119,13 @@ export async function moveBus(id: number, direction: "up" | "down") {
     .from(buses)
     .where(eq(buses.archived, false))
     .orderBy(asc(buses.sortOrder), asc(buses.id))
-  const index = siblings.findIndex((b) => b.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (swapIndex < 0 || swapIndex >= siblings.length) return
-  const neighbour = siblings[swapIndex]
-  await db.update(buses).set({ sortOrder: neighbour.sortOrder }).where(eq(buses.id, current.id))
-  await db.update(buses).set({ sortOrder: current.sortOrder }).where(eq(buses.id, neighbour.id))
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
+  await db.transaction(async (tx) => {
+    for (const u of updates) {
+      await tx.update(buses).set({ sortOrder: u.sortOrder }).where(eq(buses.id, u.id))
+    }
+  })
 }
 
 export async function deleteBus(id: number) {

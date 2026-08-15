@@ -27,6 +27,7 @@ import {
 } from "@/lib/media/node"
 import { toPublicReview } from "@/lib/review-utils"
 import { parseJson, mapTransfer } from "./_shared"
+import { computeSwapUpdates, type MoveDirection } from "./move"
 export async function getTransfers(category?: TransferCategory): Promise<Transfer[]> {
   await ensureDb()
   const rows = await db
@@ -94,7 +95,7 @@ export async function updateTransfer(id: number, input: TransferInput, executor:
 }
 
 /** Swap sortOrder with neighbour within the same category (active list). Normalizes duplicate orders. */
-export async function moveTransfer(id: number, direction: "up" | "down") {
+export async function moveTransfer(id: number, direction: MoveDirection) {
   await ensureDb()
   const [current] = await db.select().from(transfers).where(eq(transfers.id, id)).limit(1)
   if (!current || current.archived) return
@@ -103,16 +104,11 @@ export async function moveTransfer(id: number, direction: "up" | "down") {
     .from(transfers)
     .where(and(eq(transfers.category, current.category), eq(transfers.archived, false)))
     .orderBy(asc(transfers.sortOrder), asc(transfers.id))
-  const index = siblings.findIndex((t) => t.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
-  const ordered = [...siblings]
-  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
   await db.transaction(async (tx) => {
-    for (let i = 0; i < ordered.length; i++) {
-      if (ordered[i].sortOrder !== i) {
-        await tx.update(transfers).set({ sortOrder: i }).where(eq(transfers.id, ordered[i].id))
-      }
+    for (const u of updates) {
+      await tx.update(transfers).set({ sortOrder: u.sortOrder }).where(eq(transfers.id, u.id))
     }
   })
 }

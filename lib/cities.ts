@@ -6,6 +6,7 @@ import { slugify } from "@/lib/countries"
 import { toArchivedSlug, stripArchivedSuffix } from "@/lib/archive-slug"
 import { getSettings } from "@/lib/cms"
 import type { CityDestination, CityCategory } from "@/lib/types"
+import { computeSwapUpdates, type MoveDirection } from "@/lib/queries/move"
 
 export const CITY_ARCHIVE_BLOCKED_BY_TOURS =
   "Нельзя заархивировать, пока существуют активные туры в этом направлении"
@@ -174,8 +175,8 @@ export async function updateCity(id: number, input: CityInput, executor: DbExecu
   await executor.update(cityDestinations).set(serializeCity(input)).where(eq(cityDestinations.id, id))
 }
 
-/** Swap sortOrder with neighbour in the same country group (admin accordion). */
-export async function moveCity(id: number, direction: "up" | "down") {
+/** Swap sortOrder with neighbour in the same country group (admin accordion). Normalizes duplicate orders. */
+export async function moveCity(id: number, direction: MoveDirection) {
   await ensureDb()
   const [current] = await db.select().from(cityDestinations).where(eq(cityDestinations.id, id)).limit(1)
   if (!current || current.archived) return
@@ -190,18 +191,13 @@ export async function moveCity(id: number, direction: "up" | "down") {
       ),
     )
     .orderBy(asc(cityDestinations.sortOrder), asc(cityDestinations.id))
-  const index = siblings.findIndex((c) => c.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (swapIndex < 0 || swapIndex >= siblings.length) return
-  const neighbour = siblings[swapIndex]
-  await db
-    .update(cityDestinations)
-    .set({ sortOrder: neighbour.sortOrder })
-    .where(eq(cityDestinations.id, current.id))
-  await db
-    .update(cityDestinations)
-    .set({ sortOrder: current.sortOrder })
-    .where(eq(cityDestinations.id, neighbour.id))
+  const updates = computeSwapUpdates(siblings, id, direction)
+  if (updates.length === 0) return
+  await db.transaction(async (tx) => {
+    for (const u of updates) {
+      await tx.update(cityDestinations).set({ sortOrder: u.sortOrder }).where(eq(cityDestinations.id, u.id))
+    }
+  })
 }
 
 /**
