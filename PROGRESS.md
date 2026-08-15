@@ -35,7 +35,8 @@
 
 ## Заметки
 
-- Ошибка `e.getAll is not a function` уже исправлена в components/admin/page-faq-form.tsx (validate использовал HTMLFormElement.getAll) — проверить другие вхождения.
-- CSP для tourvisor/yandex.by уже добавлен в next.config.mjs — на проде старый билд, требуется деплой.
+- [x] `e.getAll is not a function`: проверены все вхождения `.getAll(` в app/components/lib — все вызываются на FormData (formData/fd/portalFd), багов не осталось.
+- [x] Диалог unsaved-changes на «Важном сообщении» (page-alerts): проверен в браузере — стили корректны, «Остаться» оставляет на странице, «Уйти без сохранения» уходит. Ложных срабатываний нет.
+- CSP для tourvisor/yandex.by уже добавлен в next.config.mjs — на проде старый билд, требуется деплой (действие на стороне пользователя: Publish).
 - SVG-символ BYN пользователя: public/icons/currency/byn.svg (после задачи 2).
-- Уведомление «не работаем» = раздел page-alerts (скриншот пользователя) — диалог unsaved-changes ломается стилями.
+- В песочнице чата используется локальный Postgres (/tmp/pgdata); для прода нужен реальный DATABASE_URL (Neon и т.п.).
