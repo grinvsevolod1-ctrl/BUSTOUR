@@ -52,7 +52,8 @@
     "test:media-smoke": "npx tsx scripts/smoke-media-lifecycle.ts",
     "db:reset:dev": "npx tsx scripts/reset-dev-db.ts",
     "test:db-migrations": "npx tsx scripts/db-migration-safety.selfcheck.ts",
-    "test:security": "npx tsx --conditions=react-server scripts/rate-limit.selfcheck.ts && npx tsx scripts/password.selfcheck.ts && npx tsx scripts/avia-slug.selfcheck.ts"
+    "test:security": "npx tsx --conditions=react-server scripts/rate-limit.selfcheck.ts && npx tsx scripts/password.selfcheck.ts && npx tsx scripts/avia-slug.selfcheck.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -105,6 +106,7 @@
     "postcss": "^8.5",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.12",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "vitest": "^4.1.10"
   }
 }
