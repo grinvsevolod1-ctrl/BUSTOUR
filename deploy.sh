@@ -77,6 +77,9 @@ if [ "$DO_SETUP" -eq 1 ]; then
     sudo cp ops/nginx/bastur.conf /etc/nginx/sites-available/bastur.conf
     sudo ln -sf /etc/nginx/sites-available/bastur.conf /etc/nginx/sites-enabled/bastur.conf
     sudo rm -f /etc/nginx/sites-enabled/default
+    # Директория для proxy_cache_path из конфига — без неё nginx -t падает
+    sudo mkdir -p /var/cache/nginx/bastur
+    sudo chown -R www-data:www-data /var/cache/nginx
     sudo nginx -t && sudo systemctl reload nginx
   fi
 
