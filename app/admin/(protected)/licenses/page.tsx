@@ -3,7 +3,8 @@ import { Pencil, Trash2, Plus, FolderOpen } from "lucide-react"
 import { getCertSectionsWithItems } from "@/lib/queries"
 import { getSettings, getBlocks, getFaqBlocksForPage } from "@/lib/cms"
 import { pageSettingsGroups, type PageSection } from "@/lib/admin-config"
-import { deleteCertSectionAction, deleteCertificateAction } from "@/app/admin/cert-actions"
+import { deleteCertSectionAction, deleteCertificateAction, moveCertSectionAction, moveCertificateAction } from "@/app/admin/cert-actions"
+import { SortOrderButtons } from "@/components/admin/sort-order-buttons"
 import { buildFaqSlots } from "@/components/admin/build-faq-slots"
 import { PageSettingsForm } from "@/components/admin/page-settings-form"
 import { PageSectionsManager } from "@/components/admin/page-sections-manager"
@@ -120,10 +121,16 @@ export default async function AdminLicensesPage() {
             />
           ) : (
             <div className="space-y-8">
-              {sections.map((section) => (
+              {sections.map((section, sectionIndex) => (
                 <div key={section.id} className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
+                      <SortOrderButtons
+                        action={moveCertSectionAction}
+                        id={section.id}
+                        isFirst={sectionIndex === 0}
+                        isLast={sectionIndex === sections.length - 1}
+                      />
                       <FolderOpen className="h-4 w-4 shrink-0 text-admin-fg-subtle" />
                       <h2 className="text-sm font-semibold text-admin-fg">{section.title}</h2>
                       <Badge tone="neutral">{section.items.length}</Badge>
@@ -166,9 +173,19 @@ export default async function AdminLicensesPage() {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {section.items.map((cert) => (
+                        {section.items.map((cert, certIndex) => (
                           <Tr key={cert.id}>
-                            <Td className="font-medium">{cert.name}</Td>
+                            <Td className="font-medium">
+                              <div className="flex items-center gap-2">
+                                <SortOrderButtons
+                                  action={moveCertificateAction}
+                                  id={cert.id}
+                                  isFirst={certIndex === 0}
+                                  isLast={certIndex === section.items.length - 1}
+                                />
+                                <span>{cert.name}</span>
+                              </div>
+                            </Td>
                             <Td className="hidden max-w-xs md:table-cell">
                               <span className="line-clamp-2 text-admin-fg-muted">{cert.description}</span>
                             </Td>

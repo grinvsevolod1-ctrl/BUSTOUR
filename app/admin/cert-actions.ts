@@ -6,9 +6,11 @@ import {
   createCertSection,
   updateCertSection,
   deleteCertSection,
+  moveCertSection,
   createCertificate,
   updateCertificate,
   deleteCertificate,
+  moveCertificate,
   type CertSectionInput,
   type CertificateInput,
 } from "@/lib/queries"
@@ -66,6 +68,26 @@ export async function deleteCertSectionAction(formData: FormData) {
   }
 }
 
+export async function moveCertSectionAction(formData: FormData) {
+  const id = Number(formData.get("id") || 0)
+  const direction = String(formData.get("direction") || "up") === "down" ? "down" : "up"
+  await withAdminAction(
+    { errorMessage: "Не удалось переместить раздел", revalidate: REVALIDATE },
+    async () => {
+      if (id) await moveCertSection(id, direction)
+      return {
+        audit: {
+          action: "cert_section_move",
+          entityType: "cert_section",
+          entityId: id,
+          summary: `Перемещён раздел #${id} (${direction})`,
+          after: { direction },
+        },
+      }
+    },
+  )
+}
+
 /* ---------- Certificates ---------- */
 
 export async function saveCertificateAction(_prev: unknown, formData: FormData) {
@@ -100,6 +122,26 @@ export async function saveCertificateAction(_prev: unknown, formData: FormData) 
   )
   if ("error" in outcome) return outcome
   redirect("/admin/licenses")
+}
+
+export async function moveCertificateAction(formData: FormData) {
+  const id = Number(formData.get("id") || 0)
+  const direction = String(formData.get("direction") || "up") === "down" ? "down" : "up"
+  await withAdminAction(
+    { errorMessage: "Не удалось переместить документ", revalidate: REVALIDATE },
+    async () => {
+      if (id) await moveCertificate(id, direction)
+      return {
+        audit: {
+          action: "certificate_move",
+          entityType: "certificate",
+          entityId: id,
+          summary: `Перемещён документ #${id} (${direction})`,
+          after: { direction },
+        },
+      }
+    },
+  )
 }
 
 export async function deleteCertificateAction(formData: FormData) {

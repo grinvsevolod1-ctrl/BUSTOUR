@@ -5,6 +5,7 @@ import {
   createCurrency,
   updateCurrency,
   deleteCurrency,
+  moveCurrency,
   refreshCurrenciesFromNbrb,
   saveMarkupPercent,
   type CurrencyInput,
@@ -75,6 +76,26 @@ export async function deleteCurrencyAction(formData: FormData) {
           entityType: "currency",
           entityId: id,
           summary: `Удалена валюта #${id}`,
+        },
+      }
+    },
+  )
+}
+
+export async function moveCurrencyAction(formData: FormData) {
+  const id = Number(formData.get("id") || 0)
+  const direction = String(formData.get("direction") || "up") === "down" ? "down" : "up"
+  await withAdminAction(
+    { capability: "manage_currencies", errorMessage: "Не удалось переместить валюту", revalidate: REVALIDATE },
+    async () => {
+      if (id) await moveCurrency(id, direction)
+      return {
+        audit: {
+          action: "currency_move",
+          entityType: "currency",
+          entityId: id,
+          summary: `Перемещена валюта #${id} (${direction})`,
+          after: { direction },
         },
       }
     },

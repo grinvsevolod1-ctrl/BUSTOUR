@@ -167,6 +167,23 @@ export async function updateCurrency(id: number, input: CurrencyInput) {
   await ensureOneBase()
 }
 
+/** Swap sortOrder with neighbour currency. Normalizes duplicate orders. */
+export async function moveCurrency(id: number, direction: "up" | "down") {
+  const { asc, eq, db, currencies, ensureDb } = await getCurrencyDbContext()
+  await ensureDb()
+  const siblings = await db.select().from(currencies).orderBy(asc(currencies.sortOrder), asc(currencies.id))
+  const index = siblings.findIndex((c) => c.id === id)
+  const swapIndex = direction === "up" ? index - 1 : index + 1
+  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
+  const ordered = [...siblings]
+  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  for (let i = 0; i < ordered.length; i++) {
+    if (ordered[i].sortOrder !== i) {
+      await db.update(currencies).set({ sortOrder: i }).where(eq(currencies.id, ordered[i].id))
+    }
+  }
+}
+
 export async function deleteCurrency(id: number) {
   const { db, currencies, ensureDb, eq } = await getCurrencyDbContext()
   await ensureDb()

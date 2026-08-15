@@ -72,6 +72,28 @@ export async function updateStaffMember(id: number, input: StaffInput) {
   await db.update(staff).set(input).where(eq(staff.id, id))
 }
 
+/** Swap sortOrder with neighbour in the active staff list. Normalizes duplicate orders. */
+export async function moveStaffMember(id: number, direction: "up" | "down") {
+  await ensureDb()
+  const siblings = await db
+    .select()
+    .from(staff)
+    .where(eq(staff.archived, false))
+    .orderBy(asc(staff.sortOrder), asc(staff.createdAt))
+  const index = siblings.findIndex((m) => m.id === id)
+  const swapIndex = direction === "up" ? index - 1 : index + 1
+  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
+  const ordered = [...siblings]
+  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < ordered.length; i++) {
+      if (ordered[i].sortOrder !== i) {
+        await tx.update(staff).set({ sortOrder: i }).where(eq(staff.id, ordered[i].id))
+      }
+    }
+  })
+}
+
 export async function deleteStaffMember(id: number) {
   await ensureDb()
   await db.update(staff).set({ archived: true }).where(eq(staff.id, id))

@@ -2,7 +2,8 @@ import { Pencil, Archive, UserCircle2 } from "lucide-react"
 import { getStaff } from "@/lib/queries"
 import { getSettings, getBlocks, getFaqBlocksForPage } from "@/lib/cms"
 import { pageSettingsGroups, type PageSection } from "@/lib/admin-config"
-import { deleteStaffAction } from "@/app/admin/staff-actions"
+import { deleteStaffAction, moveStaffAction } from "@/app/admin/staff-actions"
+import { SortOrderButtons } from "@/components/admin/sort-order-buttons"
 import { buildFaqSlots } from "@/components/admin/build-faq-slots"
 import { PageSettingsForm } from "@/components/admin/page-settings-form"
 import { PageSectionsManager } from "@/components/admin/page-sections-manager"
@@ -124,10 +125,16 @@ export default async function AdminStaffPage() {
                 </tr>
               </Thead>
               <Tbody>
-                {members.map((m) => (
+                {members.map((m, index) => (
                   <Tr key={m.id}>
                     <Td>
                       <div className="flex items-center gap-2">
+                        <SortOrderButtons
+                          action={moveStaffAction}
+                          id={m.id}
+                          isFirst={index === 0}
+                          isLast={index === members.length - 1}
+                        />
                         {m.photo ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img

@@ -46,6 +46,7 @@ import {
   createBus,
   updateBus,
   moveBus,
+  moveTransfer,
   deleteBus,
   restoreBus,
   purgeBus,
@@ -621,6 +622,26 @@ export async function moveBusAction(formData: FormData) {
   })
   revalidatePath("/admin/buses")
   revalidatePath("/bus-rental")
+}
+
+export async function moveTransferAction(formData: FormData) {
+  const admin = await requireAdmin()
+  const id = Number(formData.get("id") || 0)
+  const direction = String(formData.get("direction") || "up") === "down" ? "down" : "up"
+  if (id) await moveTransfer(id, direction)
+  const transfer = id ? await getTransferById(id) : undefined
+  await writeAudit({
+    admin,
+    action: "transfer_move",
+    entityType: "transfer",
+    entityId: id,
+    summary: transfer
+      ? `Перемещён трансфер «${transfer.title}» (${direction})`
+      : `Перемещён трансфер #${id} (${direction})`,
+    after: { direction },
+  })
+  revalidatePath("/admin/transfers")
+  revalidatePath("/info/transfers")
 }
 
 export async function deleteBusAction(formData: FormData) {

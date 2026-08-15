@@ -88,6 +88,48 @@ export async function deleteCertSection(id: number) {
   await db.delete(certSections).where(eq(certSections.id, id))
 }
 
+/** Swap sortOrder with neighbour section. Normalizes duplicate orders. */
+export async function moveCertSection(id: number, direction: "up" | "down") {
+  await ensureDb()
+  const siblings = await db.select().from(certSections).orderBy(asc(certSections.sortOrder), asc(certSections.createdAt))
+  const index = siblings.findIndex((s) => s.id === id)
+  const swapIndex = direction === "up" ? index - 1 : index + 1
+  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
+  const ordered = [...siblings]
+  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < ordered.length; i++) {
+      if (ordered[i].sortOrder !== i) {
+        await tx.update(certSections).set({ sortOrder: i }).where(eq(certSections.id, ordered[i].id))
+      }
+    }
+  })
+}
+
+/** Swap sortOrder with neighbour certificate within the same section. Normalizes duplicate orders. */
+export async function moveCertificate(id: number, direction: "up" | "down") {
+  await ensureDb()
+  const [current] = await db.select().from(certificates).where(eq(certificates.id, id)).limit(1)
+  if (!current) return
+  const siblings = await db
+    .select()
+    .from(certificates)
+    .where(eq(certificates.sectionId, current.sectionId))
+    .orderBy(asc(certificates.sortOrder), asc(certificates.createdAt))
+  const index = siblings.findIndex((c) => c.id === id)
+  const swapIndex = direction === "up" ? index - 1 : index + 1
+  if (index < 0 || swapIndex < 0 || swapIndex >= siblings.length) return
+  const ordered = [...siblings]
+  ;[ordered[index], ordered[swapIndex]] = [ordered[swapIndex], ordered[index]]
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < ordered.length; i++) {
+      if (ordered[i].sortOrder !== i) {
+        await tx.update(certificates).set({ sortOrder: i }).where(eq(certificates.id, ordered[i].id))
+      }
+    }
+  })
+}
+
 export async function createCertificate(input: CertificateInput) {
   await ensureDb()
   await db.insert(certificates).values({ ...input, createdAt: Date.now() })

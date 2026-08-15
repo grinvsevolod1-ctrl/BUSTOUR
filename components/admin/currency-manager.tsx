@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useRef, useState } from "react"
 import { CircleCheck, LoaderCircle, Plus, Pencil, Trash2, X } from "lucide-react"
-import { saveCurrencyAction, deleteCurrencyAction, refreshCurrencyRatesAction } from "@/app/admin/currency-actions"
+import { saveCurrencyAction, deleteCurrencyAction, refreshCurrencyRatesAction, moveCurrencyAction } from "@/app/admin/currency-actions"
+import { SortOrderButtons } from "@/components/admin/sort-order-buttons"
 import type { Currency } from "@/lib/types"
 import {
   Card,
@@ -108,14 +109,22 @@ export function CurrencyManager({ currencies, markupPercent = 0 }: { currencies:
                 </tr>
               </Thead>
               <Tbody>
-                {currencies.map((c) => (
+                {currencies.map((c, index) => (
                   <Tr key={c.id}>
                     <Td className="font-medium">
-                      <span className="inline-flex items-center gap-1.5">
-                        <CurrencyIcon code={c.code} className="h-4 w-4 text-admin-fg-muted" />
-                        {c.code}
-                      </span>{" "}
-                      {c.isBase ? <Badge tone="blue">базовая</Badge> : null}
+                      <div className="flex items-center gap-2">
+                        <SortOrderButtons
+                          action={moveCurrencyAction}
+                          id={c.id}
+                          isFirst={index === 0}
+                          isLast={index === currencies.length - 1}
+                        />
+                        <span className="inline-flex items-center gap-1.5">
+                          <CurrencyIcon code={c.code} className="h-4 w-4 text-admin-fg-muted" />
+                          {c.code}
+                        </span>
+                        {c.isBase ? <Badge tone="blue">базовая</Badge> : null}
+                      </div>
                     </Td>
                     <Td className="text-admin-fg-muted">{c.label}</Td>
                     <Td className="text-admin-fg-muted">{c.symbol || c.code}</Td>

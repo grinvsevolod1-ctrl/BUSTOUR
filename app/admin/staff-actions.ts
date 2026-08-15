@@ -11,6 +11,8 @@ import {
   deleteStaffMember,
   restoreStaffMember,
   purgeStaffMember,
+  moveStaffMember,
+  getStaffMember,
   type StaffInput,
 } from "@/lib/queries"
 import { mapDbError } from "@/lib/db-errors"
@@ -68,6 +70,26 @@ export async function saveStaffAction(_prev: unknown, formData: FormData) {
   revalidatePath("/admin/staff")
   revalidatePath("/company/staff")
   redirect("/admin/staff")
+}
+
+export async function moveStaffAction(formData: FormData) {
+  const admin = await requireAdmin()
+  const id = Number(formData.get("id") || 0)
+  const direction = String(formData.get("direction") || "up") === "down" ? "down" : "up"
+  if (id) await moveStaffMember(id, direction)
+  const member = id ? await getStaffMember(id) : undefined
+  await writeAudit({
+    admin,
+    action: "staff_move",
+    entityType: "staff",
+    entityId: id,
+    summary: member
+      ? `Перемещён сотрудник «${member.name}» (${direction})`
+      : `Перемещён сотрудник #${id} (${direction})`,
+    after: { direction },
+  })
+  revalidatePath("/admin/staff")
+  revalidatePath("/company/staff")
 }
 
 export async function deleteStaffAction(formData: FormData) {

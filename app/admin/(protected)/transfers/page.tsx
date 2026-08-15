@@ -1,10 +1,11 @@
 import { Plus, Pencil, Archive, ExternalLink, EyeOff } from "lucide-react"
 import { getTransfers } from "@/lib/queries"
 import { getSettings } from "@/lib/cms"
-import { deleteTransferAction } from "@/app/admin/actions"
+import { deleteTransferAction, moveTransferAction } from "@/app/admin/actions"
 import { PageHeader, ButtonLink, TableWrap, Thead, Th, Tbody, Td, Tr, IconButton, IconLink, EmptyState } from "@/components/admin/ui"
 import { VisibilityToggle } from "@/components/admin/visibility-toggle"
 import { ConfirmActionForm } from "@/components/admin/confirm-action-form"
+import { SortOrderButtons } from "@/components/admin/sort-order-buttons"
 
 export default async function AdminTransfersPage() {
   const [transfers, settings] = await Promise.all([getTransfers(), getSettings()])
@@ -16,11 +17,13 @@ export default async function AdminTransfersPage() {
       {transfers.length === 0 ? <EmptyState title="Трансферов пока нет" description="Добавьте первый трансфер." /> : (
         <TableWrap>
           <Thead><tr><Th>Название</Th><Th>Категория</Th><Th>Цена туда/обратно</Th><Th>Цена в одну сторону</Th><Th actions className="sr-only">Действия</Th></tr></Thead>
-          <Tbody>{transfers.map((transfer) => {
+          <Tbody>{transfers.map((transfer, index) => {
             const visible = settings[`transfer:${transfer.slug}.visible`] !== "0"
+            const isFirstInCategory = index === 0 || transfers[index - 1].category !== transfer.category
+            const isLastInCategory = index === transfers.length - 1 || transfers[index + 1].category !== transfer.category
             return (
               <Tr key={transfer.id}>
-                <Td className="font-medium"><div className="flex items-center gap-2"><span>{transfer.title}</span>{!visible ? <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700"><EyeOff className="h-3 w-3" /> Скрыт</span> : null}</div></Td>
+                <Td className="font-medium"><div className="flex items-center gap-2"><SortOrderButtons action={moveTransferAction} id={transfer.id} isFirst={isFirstInCategory} isLast={isLastInCategory} /><span>{transfer.title}</span>{!visible ? <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700"><EyeOff className="h-3 w-3" /> Скрыт</span> : null}</div></Td>
                 <Td className="text-admin-fg-muted">{transfer.category === "airport" ? "Трансфер в аэропорты" : "Индивидуальный"}</Td>
                 <Td className="text-admin-fg-muted">{transfer.priceRoundTrip || "—"}</Td>
                 <Td className="text-admin-fg-muted">{transfer.priceOneWay || "—"}</Td>
