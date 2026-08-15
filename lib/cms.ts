@@ -1,3 +1,4 @@
+import { cache } from "react"
 import { and, asc, eq, like, or } from "drizzle-orm"
 import { db, type DbExecutor } from "@/lib/db"
 import { settings, contentBlocks } from "@/lib/db/schema"
@@ -16,10 +17,15 @@ export async function getSettings(): Promise<SiteSettings> {
   return map
 }
 
-/** Public pages only: settings with `[Shortcodes]` already expanded. Admin must use `getSettings()`. */
-export async function getPublicSettings(): Promise<SiteSettings> {
+/**
+ * Public pages only: settings with `[Shortcodes]` already expanded. Admin must use `getSettings()`.
+ *
+ * Обёрнуто в React cache(): layout, generateMetadata и страница дёргают эту функцию
+ * в одном запросе — SQL выполняется один раз на рендер, а не 3-4 раза.
+ */
+export const getPublicSettings = cache(async (): Promise<SiteSettings> => {
   return expandSettingsValues(await getSettings())
-}
+})
 
 /**
  * Returns the site origin with protocol and no trailing slash for Tourvisor widget URLs.
@@ -102,22 +108,27 @@ function mapBlock(row: typeof contentBlocks.$inferSelect): ContentBlock {
   }
 }
 
+/**
+ * Один SQL-запрос на коллекцию за рендер (React cache, ключ — примитив-строка).
+ * Фильтрация по page/visible — в памяти: блоков в коллекции единицы-десятки.
+ */
+const listCollectionBlocks = cache(async (collection: string): Promise<ContentBlock[]> => {
+  await ensureDb()
+  const rows = await db
+    .select()
+    .from(contentBlocks)
+    .where(eq(contentBlocks.collection, collection))
+    .orderBy(asc(contentBlocks.sortOrder), asc(contentBlocks.id))
+  return rows.map(mapBlock)
+})
+
 export async function getBlocks(
   collection: BlockCollection,
   opts: { onlyVisible?: boolean; page?: string } = {},
 ): Promise<ContentBlock[]> {
-  await ensureDb()
-  const where =
-    opts.page !== undefined
-      ? and(eq(contentBlocks.collection, collection), eq(contentBlocks.page, opts.page))
-      : eq(contentBlocks.collection, collection)
-  const rows = await db
-    .select()
-    .from(contentBlocks)
-    .where(where)
-    .orderBy(asc(contentBlocks.sortOrder), asc(contentBlocks.id))
-  const mapped = rows.map(mapBlock)
-  return opts.onlyVisible ? mapped.filter((b) => b.visible) : mapped
+  let blocks = await listCollectionBlocks(collection)
+  if (opts.page !== undefined) blocks = blocks.filter((b) => b.page === opts.page)
+  return opts.onlyVisible ? blocks.filter((b) => b.visible) : blocks
 }
 
 /** Public catalog: only visible tables explicitly configured for this admin page. */

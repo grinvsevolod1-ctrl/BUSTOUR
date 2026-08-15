@@ -1,6 +1,7 @@
 import fs from "node:fs"
 import path from "node:path"
 import type { Metadata } from "next"
+import Image from "next/image"
 import { Breadcrumb } from "@/components/site/breadcrumb"
 import { TitleUnderline } from "@/components/site/title-underline"
 import { PageExtras } from "@/components/site/page-extras"
@@ -74,8 +75,7 @@ export default async function MemosPage() {
           <section className="space-y-6">
             {headerImage ? (
               <div className="relative aspect-[21/6] w-full overflow-hidden rounded-xl bg-cream">
-                {/* eslint-disable-next-line @next/next/no-img-element -- CMS/upload URLs */}
-                <img src={headerImage} alt="" className="h-full w-full object-cover" />
+                <Image src={headerImage || "/placeholder.svg"} alt="" fill sizes="(max-width: 1200px) 100vw, 1200px" className="object-cover" />
               </div>
             ) : null}
             <TitleUnderline as="h1">{title}</TitleUnderline>

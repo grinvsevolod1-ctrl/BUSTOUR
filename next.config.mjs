@@ -25,7 +25,9 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://mc.yandex.ru https://yastatic.net https://cdn.jsdelivr.net",
+              // 'unsafe-eval' нужен только webpack-у в dev-режиме (HMR/eval-source-map).
+              // В production он исключается — это заметно сужает поверхность XSS.
+              `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://mc.yandex.ru https://yastatic.net https://cdn.jsdelivr.net`,
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' https://fonts.gstatic.com",
@@ -50,8 +52,20 @@ const nextConfig = {
       },
     ];
   },
+  // gzip отдаёт nginx (см. ops/nginx/bastur.conf) — не тратим CPU node-процесса.
+  compress: false,
   images: {
-    unoptimized: true,
+    // Оптимизация включена: sharp установлен, на VPS (pm2 + next start)
+    // ресайз и конвертация в AVIF/WebP работают из коробки.
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Оптимизированные версии кешируются на диске (.next/cache/images) на 31 день.
+    minimumCacheTTL: 2678400,
+    remotePatterns: [
+      // Контент из админки может ссылаться на внешние https-изображения.
+      { protocol: "https", hostname: "**" },
+    ],
   },
   async redirects() {
     return [
