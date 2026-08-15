@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useEffect, type ReactNode } from "react"
 import { ConsentProvider, CookieBanner, useConsent } from "consentium"
 import { consentCopyRu } from "@/lib/consent-copy-ru"
@@ -26,11 +27,20 @@ function ConsentTtlGuard() {
 }
 
 export function SiteConsent({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+  // В админке cookie-баннер не показываем: это служебная панель без
+  // маркетинговой аналитики, а fixed-баннер перекрывает модалки админки.
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/")
+
   return (
     <ConsentProvider config={consentConfig} copy={consentCopyRu} linkComponent={Link}>
       {children}
-      <ConsentTtlGuard />
-      <CookieBanner />
+      {!isAdmin ? (
+        <>
+          <ConsentTtlGuard />
+          <CookieBanner />
+        </>
+      ) : null}
     </ConsentProvider>
   )
 }

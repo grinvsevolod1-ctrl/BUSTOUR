@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -474,9 +475,12 @@ export function AdminSearch({ role }: { role: AdminRole }) {
         </kbd>
       </button>
 
-      {open ? (
+      {/* Портал в body обязателен: сайдбар — position:sticky и создаёт свой
+          stacking context, внутри которого любой z-index «заперт» и липкие
+          шапки контента (z-40) перекрывают модалку. */}
+      {open ? createPortal(
         <div
-          className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-[12vh]"
+          className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[12vh]"
           role="dialog"
           aria-modal="true"
           aria-label="Поиск по разделам админки">
@@ -561,7 +565,8 @@ export function AdminSearch({ role }: { role: AdminRole }) {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       ) : null}
     </>
   );
