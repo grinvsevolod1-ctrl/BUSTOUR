@@ -47,42 +47,34 @@ function runPreflight(): void {
 runPreflight()
 
 
+/**
+ * The DB layer (lib/db) is PostgreSQL-only. The old SQLite/Turso `file:` fallback
+ * broke local dev with "[db] DATABASE_URL must be a PostgreSQL URL".
+ * Now: always use DATABASE_URL from env and fail fast with a clear message.
+ *
+ * This launcher runs BEFORE `next dev`, so .env files are not loaded yet —
+ * load them the same way Next.js does (@next/env respects precedence order).
+ */
+const { loadEnvConfig } = await import("@next/env")
+loadEnvConfig(process.cwd(), true)
+
 function resolveDevDatabaseUrl(): string {
-  const env = getBustourDeployEnv()
-
-  // VPS / staging dev stand: respect DATABASE_URL if set (shared staging DB)
-  // else fall back to a persistent file on the container volume.
-  if (env === "dev") {
-    const envUrl = (process.env.DATABASE_URL || "").trim()
-    if (envUrl) return envUrl
-    const dir = path.join(process.cwd(), "data")
-    try { mkdirSync(dir, { recursive: true }) } catch {}
-    return `file:${path.join(dir, "app.db")}`
+  const envUrl = (process.env.DATABASE_URL || "").trim()
+  if (!envUrl) {
+    console.error("[dev-server] ⛔ DATABASE_URL не задан. Укажите PostgreSQL URL в .env, например:")
+    console.error("[dev-server]    DATABASE_URL=postgresql://bastur:pass@localhost:5432/bastur")
+    process.exit(1)
   }
-
-  // local dev → force local file, ignore any remote URL in .env.local
-  if (env === "local") {
-    const dir = path.join(process.cwd(), "data")
-    try { mkdirSync(dir, { recursive: true }) } catch {}
-    const dbFile = `file:${path.join(dir, "app.db")}`
-    console.log(`[dev-server] Local dev mode → forcing local SQLite: ${dbFile}`)
-    return dbFile
+  if (!/^postgres(ql)?:\/\//i.test(envUrl)) {
+    console.error(`[dev-server] ⛔ DATABASE_URL должен быть PostgreSQL URL (postgresql://…). Сейчас: ${envUrl.slice(0, 24)}…`)
+    process.exit(1)
   }
-
-  // Production guard: should not happen because this script is only run
-  // via `npm run dev`. Keep the user-set value as a safety net.
-  return (process.env.DATABASE_URL || "").trim() ||
-    `file:${path.join(process.cwd(), "data", "app.db")}`
+  return envUrl
 }
 
-// Force the override BEFORE next loads so the runtime sees the local file.
 process.env.DATABASE_URL = resolveDevDatabaseUrl()
-// Remote token is irrelevant for file:// and must never leak into local logs.
-if (!process.env.DATABASE_URL.startsWith("libsql://") &&
-    !process.env.DATABASE_URL.startsWith("http://") &&
-    !process.env.DATABASE_URL.startsWith("https://")) {
-  delete process.env.DATABASE_AUTH_TOKEN
-}
+// Legacy Turso token is irrelevant for PostgreSQL and must never leak into logs.
+delete process.env.DATABASE_AUTH_TOKEN
 
 const MIN_FREE_BYTES = 1024n * 1024n * 1024n
 const BYTES_PER_GB = 1024n * 1024n * 1024n

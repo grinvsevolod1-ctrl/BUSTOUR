@@ -1,17 +1,17 @@
 {
-  "startedAt": "2026-08-15T04:58:49.443Z",
-  "finishedAt": "2026-08-15T04:58:53.887Z",
+  "startedAt": "2026-08-15T05:07:17.249Z",
+  "finishedAt": "2026-08-15T05:07:24.461Z",
   "errors": [],
   "warnings": [
     {
       "stage": "selfcheck",
       "severity": "warning",
-      "file": "/vercel/share/v0-project/scripts/admin-roles.selfcheck.ts",
+      "file": "/vercel/share/v0-project/scripts/audit-coverage.selfcheck.ts",
       "line": null,
       "column": null,
       "code": "SELFCHECK_FAIL",
-      "message": " | [SmartTest] Selfcheck failed: scripts/admin-roles.selfcheck.ts (exit 1) | ",
-      "raw": "    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:326:3)\n    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:231:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/admin-roles.selfcheck.ts (exit 1)\n"
+      "message": " | [SmartTest] Selfcheck failed: scripts/audit-coverage.selfcheck.ts (exit 1) | ",
+      "raw": "    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object.transformer (/vercel/share/v0-project/node_modules/tsx/dist/register-C557imBs.cjs:9:3619)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/vercel/share/v0-project/.cursor/rules/admin-audit.mdc'\n}\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/audit-coverage.selfcheck.ts (exit 1)\n"
     }
   ],
   "totals": {
