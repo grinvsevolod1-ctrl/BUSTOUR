@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
+/* Vendored from shadcn (canary) dist/tailwind.css — the npm "shadcn" CLI package
+   no longer ships this file in stable releases, so we keep a local copy. */
+@import '../styles/shadcn-tailwind.css';
 @import 'flatpickr/dist/flatpickr.css';
 
 @custom-variant dark (&:is(.dark *));

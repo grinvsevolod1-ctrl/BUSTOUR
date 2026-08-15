@@ -9,6 +9,8 @@
     "dev:remote-db": "npx tsx scripts/preflight.ts --dev && next dev",
     "prebuild": "npx tsx scripts/preflight.ts --check || exit 1",
     "build": "next build --webpack",
+    "start": "next start",
+    "db:migrate:prod": "node scripts/migrate.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "check": "npx tsx scripts/preflight.ts",

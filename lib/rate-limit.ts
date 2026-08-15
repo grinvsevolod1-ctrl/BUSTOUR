@@ -7,7 +7,7 @@ import "server-only"
  * - Просроченные записи удаляются лениво при обращении И периодически фоновым
  *   sweep'ом — Map не растёт бесконечно (раньше записи копились навсегда).
  * - При работе за nginx клиентский IP берётся из X-Real-IP / первого значения
- *   X-Forwarded-For, который выставляет ДОВЕРЕННЫЙ прокси (см. deploy/nginx.conf).
+ *   X-Forwarded-For, который выставляет ДОВЕРЕННЫЙ прокси (см. ops/nginx/bastur.conf).
  */
 
 type RateEntry = { count: number; resetAt: number }
