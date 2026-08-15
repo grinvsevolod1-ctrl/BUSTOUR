@@ -4,6 +4,7 @@ import { notifyLead } from "@/lib/notify"
 import { verifyRecaptchaToken } from "@/lib/recaptcha"
 import type { LeadType } from "@/lib/types"
 import { formatPhoneIfComplete, isSupportedPhone } from "@/lib/lead"
+import { clientIpFromHeaders, consumeRateLimit } from "@/lib/rate-limit"
 
 type LeadPayload = {
   name?: unknown
@@ -44,23 +45,15 @@ function validate(body: LeadPayload) {
 
 const RATE_WINDOW = 60_000 // 1 minute
 const RATE_MAX = 5
-const rateStore = new Map<string, { count: number; resetAt: number }>()
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateStore.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateStore.set(ip, { count: 1, resetAt: now + RATE_WINDOW })
-    return true
-  }
-  entry.count++
-  return entry.count <= RATE_MAX
-}
 
 export async function POST(request: Request) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
-  if (!checkRateLimit(ip)) {
-    return NextResponse.json({ ok: false, errors: { form: "Слишком много заявок. Попробуйте позже." } }, { status: 429 })
+  const ip = clientIpFromHeaders(request.headers)
+  const rate = consumeRateLimit("lead", ip, RATE_MAX, RATE_WINDOW)
+  if (!rate.ok) {
+    return NextResponse.json(
+      { ok: false, errors: { form: "Слишком много заявок. Попробуйте позже." } },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } },
+    )
   }
 
   let body: LeadPayload
@@ -97,8 +90,9 @@ export async function POST(request: Request) {
     )
   }
 
-  // Best-effort notifications (email / Telegram) — never block the response on failure.
-  await notifyLead({
+  // Best-effort notifications (email / Telegram) — fire-and-forget, never block the response.
+  // Long-lived pm2 process keeps the event loop alive, so `void` is safe here.
+  void notifyLead({
     name: data.name,
     phone: data.phone,
     email: data.email || null,

@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next"
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://bastur.by"
+import { CANONICAL_ORIGIN } from "@/lib/canonical-origin"
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,6 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/admin/"],
     },
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    // Single source of truth — normalized protocol, no trailing slash.
+    sitemap: `${CANONICAL_ORIGIN}/sitemap.xml`,
   }
 }

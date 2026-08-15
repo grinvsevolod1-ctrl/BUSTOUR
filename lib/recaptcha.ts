@@ -1,16 +1,15 @@
 /**
  * Server-side Google reCAPTCHA v3 verification (score ≥ 0.5).
  *
- * 🔐 Fail-Closed in Production (security rule, OWASP A05:2021):
- *  - Если `NODE_ENV=production` и нет ключей reCAPTCHA или недоступен Google siteverify
- *    → запрос НЕ пропускается. HTTP 422 для вызывающего.
- *  - Принудительный BYPASS (BYPASS_RECAPTCHA=1) разрешён ТОЛЬКО в local/dev-окружениях.
- *  - Google transport errors (timeout, DNS, 5xx) → в prod всё равно закрыто, в local/dev —
- *    пропускаем, чтобы не убить локальную разработку из-за сети.
+ * 🔐 Fail-Closed everywhere except localhost (security rule, OWASP A05:2021):
+ *  - На production/preview И на публичном dev-стенде (VPS) проверка ОБЯЗАТЕЛЬНА.
+ *    Нет ключей или недоступен Google siteverify → запрос НЕ пропускается (HTTP 422).
+ *  - Автоматический bypass разрешён ТОЛЬКО для `local` (машина разработчика).
+ *  - Принудительный BYPASS (BYPASS_RECAPTCHA=1) разрешён в local и dev — нужен для CI/E2E,
+ *    но он всегда задаётся явно, а не по умолчанию.
  *
- * Non-production окружения (local / dev):
- *  - Автоматически skip, даже с ключами — Google test keys рандомят score, не надёжно.
- *  - Можно BYPASS_RECAPTCHA=1 для CI/E2E.
+ * ВАЖНО: раньше env=dev пропускал ВСЁ автоматически — публичный VPS-стенд оставался
+ * без защиты форм. Теперь dev-стенд проверяет капчу так же, как production.
  */
 
 import { getBustourDeployEnv } from "./deploy-env"
@@ -36,7 +35,7 @@ export function getCaptchaWiringStatus(): CaptchaWiringStatus {
   const secretSet = Boolean(process.env.RECAPTCHA_SECRET_KEY)
   const env = getBustourDeployEnv()
 
-  // Bypass allowed exclusively in local/dev (fail-closed everywhere else).
+  // Automatic bypass ONLY on the developer machine.
   if (env === "local") {
     return {
       siteKeySet,
@@ -45,15 +44,16 @@ export function getCaptchaWiringStatus(): CaptchaWiringStatus {
       bypassReason: "deploy-local",
     }
   }
-  if (env === "dev") {
+  // dev stand: bypass ONLY when explicitly requested (CI / E2E runs).
+  if (env === "dev" && process.env.BYPASS_RECAPTCHA === "1") {
     return {
       siteKeySet,
       secretSet,
       bypassed: true,
-      bypassReason: "deploy-dev",
+      bypassReason: "env-bypass",
     }
   }
-  // preview / production: BYPASS_RECAPTCHA is strictly ignored.
+  // dev (public VPS) / preview / production: fail-closed, captcha verified.
   return { siteKeySet, secretSet, bypassed: false }
 }
 
@@ -81,24 +81,14 @@ export async function verifyRecaptchaToken(
 ): Promise<CaptchaVerifyResult> {
   const env = getBustourDeployEnv()
   const isProduction = env === "production"
-  const nonProductionBypass = env === "local" || env === "dev"
 
-  // Step 1: BYPASS allowed ONLY on non-production.
-  if (nonProductionBypass) {
-    // Local/dev: BYPASS env also still allowed.
-    const forcedBypass = process.env.BYPASS_RECAPTCHA === "1"
-    void forcedBypass
-    if (!opts.required) {
-      return { ok: true, bypassed: true }
-    }
-    // Local/dev + required = still pass locally (Google test keys are flaky).
-    if (opts.required && !token) {
-      return { ok: true, bypassed: true }
-    }
+  // Bypass: automatic on local machine, explicit-only (BYPASS_RECAPTCHA=1) on dev stand.
+  const bypassAllowed = env === "local" || (env === "dev" && process.env.BYPASS_RECAPTCHA === "1")
+  if (bypassAllowed) {
     return { ok: true, bypassed: true }
   }
 
-  // ---- Production / Preview: fail-closed below this line ----
+  // ---- Public dev stand / Preview / Production: fail-closed below this line ----
   const status = getCaptchaWiringStatus()
 
   if (!status.secretSet) {

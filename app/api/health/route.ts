@@ -7,7 +7,8 @@ export async function GET() {
     await pingDb()
     return NextResponse.json({ ok: true })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "healthcheck failed"
-    return NextResponse.json({ ok: false, error: message }, { status: 503 })
+    // Log details server-side only — DB error messages can leak host/user info.
+    console.error("[health] check failed:", error instanceof Error ? error.message : error)
+    return NextResponse.json({ ok: false }, { status: 503 })
   }
 }

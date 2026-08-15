@@ -6,6 +6,7 @@ import { encodeReviewPhoneSourceId } from "@/lib/review-contact"
 import { formatPhoneIfComplete, isSupportedPhone } from "@/lib/lead"
 import { verifyRecaptchaToken } from "@/lib/recaptcha"
 import { stripReviewLinks } from "@/lib/review-utils"
+import { clientIpFromHeaders, consumeRateLimit } from "@/lib/rate-limit"
 
 export const runtime = "nodejs"
 /** Review media may run image/video normalize. */
@@ -15,18 +16,6 @@ const PHONE_RE = /^\+?[\d\s().-]{7,20}$/
 
 const RATE_WINDOW = 5 * 60_000 // 5 minutes
 const RATE_MAX = 3 // 3 reviews per IP in window
-const rateStore = new Map<string, { count: number; resetAt: number }>()
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateStore.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateStore.set(ip, { count: 1, resetAt: now + RATE_WINDOW })
-    return true
-  }
-  entry.count++
-  return entry.count <= RATE_MAX
-}
 
 function str(v: FormDataEntryValue | null): string {
   return typeof v === "string" ? v.trim() : ""
@@ -39,11 +28,12 @@ function truthyConsent(v: FormDataEntryValue | null): boolean {
 }
 
 export async function POST(request: Request) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown"
-  if (!checkRateLimit(ip)) {
+  const ip = clientIpFromHeaders(request.headers)
+  const rate = consumeRateLimit("review", ip, RATE_MAX, RATE_WINDOW)
+  if (!rate.ok) {
     return NextResponse.json(
       { ok: false, errors: { form: "Слишком много отзывов. Попробуйте позже." } },
-      { status: 429 },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } },
     )
   }
 

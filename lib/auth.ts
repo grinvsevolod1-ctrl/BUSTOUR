@@ -56,7 +56,7 @@ export async function login(username: string, password: string): Promise<boolean
     })
     return false
   }
-  if (!verifyPassword(password, admin.passwordHash)) {
+  if (!(await verifyPassword(password, admin.passwordHash))) {
     await writeAudit({
       admin: { id: admin.id, username: admin.username },
       action: "login_fail",

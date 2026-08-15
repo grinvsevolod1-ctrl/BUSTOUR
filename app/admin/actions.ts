@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { headers } from "next/headers"
+import { clientIpFromHeaders, consumeRateLimit, resetRateLimit } from "@/lib/rate-limit"
 import { login, logout, requireAdmin, requireCapability } from "@/lib/auth"
 import { writeAudit, auditTourSnapshot } from "@/lib/admin-audit"
 import { safeInternalNext } from "@/lib/safe-next"
@@ -88,17 +90,29 @@ import {
 
 /* ---------------- Auth ---------------- */
 
+const LOGIN_RATE_WINDOW = 15 * 60_000 // 15 minutes
+const LOGIN_RATE_MAX = 10 // attempts per IP in window
+
 export async function loginAction(_prev: unknown, formData: FormData) {
   const username = String(formData.get("username") || "").trim()
   const password = String(formData.get("password") || "")
   if (!username || !password) {
     return { error: "Введите логин и пароль" }
   }
+
+  // Brute-force protection: limit attempts per IP; counter resets on success.
+  const ip = clientIpFromHeaders(await headers())
+  const rate = consumeRateLimit("login", ip, LOGIN_RATE_MAX, LOGIN_RATE_WINDOW)
+  if (!rate.ok) {
+    return { error: `Слишком много попыток входа. Повторите через ${Math.ceil(rate.retryAfterSec / 60)} мин.` }
+  }
+
   try {
     const ok = await login(username, password)
     if (!ok) {
       return { error: "Неверный логин или пароль" }
     }
+    resetRateLimit("login", ip)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     if (msg.includes("AUTH_SECRET")) {

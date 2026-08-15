@@ -35,8 +35,10 @@ function buildLines(data: LeadData): string[] {
   ].filter(Boolean) as string[]
 }
 
+/** Hard timeout for outbound notification calls — a hung API must never stall the app. */
+const NOTIFY_TIMEOUT_MS = 5_000
+
 async function sendEmail(data: LeadData, lines: string[]) {
-  void data
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) return
   const to = process.env.LEAD_EMAIL_TO || "info@bastur.by"
@@ -46,6 +48,7 @@ async function sendEmail(data: LeadData, lines: string[]) {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from, to, subject: `${typeLabel(data.type)} — БасТур`, text: lines.join("\n") }),
+      signal: AbortSignal.timeout(NOTIFY_TIMEOUT_MS),
     })
   } catch (err) {
     console.error("[notify] lead email notify failed:", (err as Error).message)
@@ -64,6 +67,7 @@ async function sendTelegram(lines: string[]) {
         chat_id: chatId,
         text: "🔔 Новая заявка с сайта БасТур\n\n" + lines.join("\n"),
       }),
+      signal: AbortSignal.timeout(NOTIFY_TIMEOUT_MS),
     })
   } catch (err) {
     console.error("[notify] lead telegram notify failed:", (err as Error).message)

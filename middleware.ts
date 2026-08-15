@@ -57,9 +57,6 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const aviaSlug = await getAviaSlug()
 
-  // Nothing to do if slug is the default internal folder name
-  if (aviaSlug === "aviatory") return NextResponse.next()
-
   // 1. Requests to /{aviaSlug}... → rewrite to /aviatory/...
   if (pathname === `/${aviaSlug}` || pathname.startsWith(`/${aviaSlug}/`)) {
     const rewritten = pathname.replace(`/${aviaSlug}`, "/aviatory")
@@ -81,7 +78,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match /aviatory/... and /{any-slug}/... but skip Next.js internals and static files
-    "/((?!_next/static|_next/image|favicon|api/|admin).*)",
+    // Match /aviatory/... and /{any-slug}/... but skip Next.js internals, static
+    // files and runtime uploads (images/videos don't need the avia-slug DB lookup).
+    "/((?!_next/static|_next/image|favicon|api/|admin|uploads/).*)",
   ],
 }
