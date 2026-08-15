@@ -15,14 +15,24 @@ let cachedAviaSlug: string | null = null
 let cacheTs = 0
 const CACHE_TTL_MS = 60_000 // 1 minute
 
-async function getAviaSlug(origin: string): Promise<string> {
+/**
+ * Internal (loopback) origin of this very Node process.
+ *
+ * Behind nginx `request.nextUrl.origin` becomes `https://localhost:3000`
+ * (scheme from X-Forwarded-Proto, host normalized by Next standalone) —
+ * fetching or rewriting to it makes Next talk TLS to its own plain-HTTP
+ * port and every request 500s with EPROTO. Loopback over http avoids that.
+ */
+const INTERNAL_ORIGIN = `http://127.0.0.1:${process.env.PORT || 3000}`
+
+async function getAviaSlug(): Promise<string> {
   const now = Date.now()
   if (cachedAviaSlug !== null && now - cacheTs < CACHE_TTL_MS) {
     return cachedAviaSlug
   }
 
   try {
-    const res = await fetch(`${origin}/api/internal/avia-slug`, {
+    const res = await fetch(`${INTERNAL_ORIGIN}/api/internal/avia-slug`, {
       signal: AbortSignal.timeout(2_000),
     })
     if (!res.ok) throw new Error(`avia-slug route responded ${res.status}`)
@@ -60,21 +70,29 @@ export async function middleware(request: NextRequest) {
   if (previewGate) return previewGate
 
   const { pathname } = request.nextUrl
-  const aviaSlug = await getAviaSlug(request.nextUrl.origin)
+  const aviaSlug = await getAviaSlug()
 
   // 1. Requests to /{aviaSlug}... → rewrite to /aviatory/...
   if (pathname === `/${aviaSlug}` || pathname.startsWith(`/${aviaSlug}/`)) {
     const rewritten = pathname.replace(`/${aviaSlug}`, "/aviatory")
-    const url = request.nextUrl.clone()
-    url.pathname = rewritten || "/aviatory/"
+    // Rewrite against the loopback origin: with nextUrl.clone() behind nginx
+    // the origin is https://localhost:3000 and Next proxies to itself over
+    // TLS on a plain-HTTP port (EPROTO → 500).
+    const url = new URL(rewritten || "/aviatory/", INTERNAL_ORIGIN)
+    url.search = request.nextUrl.search
     return NextResponse.rewrite(url)
   }
 
   // 2. Requests to /aviatory/... → 301 redirect to /{aviaSlug}/...
   if (pathname === "/aviatory" || pathname.startsWith("/aviatory/")) {
     const redirected = pathname.replace("/aviatory", `/${aviaSlug}`)
-    const url = request.nextUrl.clone()
-    url.pathname = redirected || `/${aviaSlug}/`
+    // The Location header must carry the PUBLIC origin. nextUrl.origin is
+    // normalized to localhost behind a proxy, so rebuild it from the
+    // forwarded headers (nginx sets Host + X-Forwarded-Proto).
+    const host = request.headers.get("host") ?? request.nextUrl.host
+    const proto = request.headers.get("x-forwarded-proto") ?? "https"
+    const url = new URL(redirected || `/${aviaSlug}/`, `${proto}://${host}`)
+    url.search = request.nextUrl.search
     return NextResponse.redirect(url, 301)
   }
 
