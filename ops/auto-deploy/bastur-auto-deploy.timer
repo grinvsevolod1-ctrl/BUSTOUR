@@ -1,0 +1,11 @@
+[Unit]
+Description=Run BasTur auto-deploy check every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=1min
+# Не накапливать пропущенные запуски после простоя
+Persistent=false
+
+[Install]
+WantedBy=timers.target

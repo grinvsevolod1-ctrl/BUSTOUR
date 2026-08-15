@@ -1,0 +1,11 @@
+[Unit]
+Description=BasTur auto-deploy (git pull + deploy.sh on new commits in main)
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/var/www/bustour
+ExecStart=/var/www/bustour/ops/auto-deploy/auto-deploy.sh
+# deploy.sh включает npm ci + next build — даём щедрый таймаут
+TimeoutStartSec=30min
+# Логи смотреть: journalctl -u bastur-auto-deploy -f
