@@ -160,6 +160,15 @@ export function FieldsGrid({
                     value={settings[field.key] ?? ""}
                     form={form}
                   />
+                ) : field.type === "date" ? (
+                  <Input
+                    id={`sf-${field.key}`}
+                    type="date"
+                    name={field.key}
+                    form={form}
+                    defaultValue={settings[field.key] ?? ""}
+                    required={field.required}
+                  />
                 ) : (
                   <Input
                     id={`sf-${field.key}`}

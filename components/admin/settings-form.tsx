@@ -87,8 +87,8 @@ function CollapsibleSettingsGroup({
           />
         </button>
       </CardHeader>
-      {open ? (
-        <CardBody id={bodyId} className="space-y-4">
+      {/* Содержимое остаётся смонтированным (hidden), чтобы поля свёрнутых групп не терялись при submit */}
+      <CardBody id={bodyId} className={cn("space-y-4", !open && "hidden")}>
           {group.description ? (
             <p className="-mt-1 text-sm text-admin-fg-muted">{group.description}</p>
           ) : null}
@@ -118,7 +118,6 @@ function CollapsibleSettingsGroup({
             </aside>
           ) : null}
         </CardBody>
-      ) : null}
     </Card>
   )
 }

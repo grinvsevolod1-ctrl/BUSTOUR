@@ -98,7 +98,7 @@ export type SettingFieldOption = {
 export type SettingField = {
   key: string
   label: string
-  type?: "text" | "textarea" | "shortcode-input" | "shortcode-textarea" | "shortcode-textarea-multiline" | "richtext" | "media" | "select"
+  type?: "text" | "textarea" | "shortcode-input" | "shortcode-textarea" | "shortcode-textarea-multiline" | "richtext" | "media" | "select" | "date"
   required?: boolean
   placeholder?: string
   hint?: string
@@ -395,7 +395,7 @@ export const pageSettingsGroups: Record<string, {
           { key: "title.featured", label: "Лучшие предложения — заголовок", type: "shortcode-input" },
           {
             key: "description.featured",
-            label: "Лучшие предложения �� описание под заголовком",
+            label: "Лучшие предложения ��� описание под заголовком",
             type: "shortcode-textarea-multiline",
             rows: 2,
             hint: "Короткий текст-интро над карточками «Лучшие предл��жения».",
@@ -787,7 +787,7 @@ export function aviaCityPageConfig(
       { key: `${p}.section.search`, label: "Фильтр и резул��таты поиска" },
       { key: `${p}.section.cities`, label: "Карточки курортов" },
       { key: `${p}.section.resorts`, label: "Таблица" },
-      { key: `${p}.section.seo`, label: "SEO-текст (расширенный)" },
+      { key: `${p}.section.seo`, label: "SEO-��екст (расширенный)" },
       { key: `${p}.section.faq`, label: "Частые вопросы" },
       { key: `${p}.section.callus`, label: "«Есть вопросы?»" },
     ],
@@ -1271,14 +1271,14 @@ export const settingsGroups: SettingsGroup[] = [
       {
         key: "announcement.startDate",
         label: "Показывать с (дата)",
-        placeholder: "2025-12-25",
-        hint: "Формат ГГГГ-ММ-ДД. Пусто — показывать сразу.",
+        type: "date",
+        hint: "Пусто — показывать сразу.",
       },
       {
         key: "announcement.endDate",
         label: "Показывать по (дата)",
-        placeholder: "2026-01-03",
-        hint: "Формат ГГГГ-ММ-ДД, включительно. Пусто — без ограничения.",
+        type: "date",
+        hint: "Включительно. Пусто — без ограничения.",
       },
     ],
     help: "Посетитель закрывает попап один раз — повторно он не появится, пока вы не измените текст или заголовок сообщения. Изменили текст — попап покажется всем снова.",
