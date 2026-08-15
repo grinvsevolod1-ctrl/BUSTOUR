@@ -38,9 +38,10 @@ function sheetNameForTour(tour: Tour): string {
   return (prefix + safeTitle).slice(0, prefix.length + maxTitleLen) || `#${tour.id}`
 }
 
-function tagsToText(tags: DatesTableTag[]): string {
+function tagsToText(tags: DatesTableTag[] | undefined | null): string {
+  if (!Array.isArray(tags)) return ""
   return tags
-    .filter((t) => t.label.trim())
+    .filter((t) => t.label?.trim())
     .map((t) => `${t.icon}:${t.label.trim()}`)
     .join("; ")
 }
@@ -131,11 +132,10 @@ export function buildPricingWorkbook(tours: Tour[]): ExcelJS.Workbook {
     sheet.getColumn(2).numFmt = "@"
 
     let r = 3
-    for (const row of tour.datesTable.rows) {
+    for (const row of tour.datesTable.rows ?? []) {
       const tagsText = tagsToText(row.tags)
-      const lines2 = row.rooms.length
-        ? row.rooms
-        : [null]
+      const rooms = Array.isArray(row.rooms) ? row.rooms : []
+      const lines2 = rooms.length ? rooms : [null]
       for (const room of lines2) {
         const excelRow = sheet.getRow(r++)
         excelRow.getCell(1).value = row.startDate
