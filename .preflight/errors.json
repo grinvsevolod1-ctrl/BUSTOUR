@@ -1,17 +1,17 @@
 {
-  "startedAt": "2026-08-15T12:00:52.583Z",
-  "finishedAt": "2026-08-15T12:01:22.295Z",
+  "startedAt": "2026-08-15T12:02:28.890Z",
+  "finishedAt": "2026-08-15T12:02:58.914Z",
   "errors": [],
   "warnings": [
     {
       "stage": "selfcheck",
       "severity": "warning",
-      "file": "/vercel/share/v0-project/scripts/rate-limit.selfcheck.ts",
+      "file": "/vercel/share/v0-project/scripts/recaptcha.selfcheck.ts",
       "line": null,
       "column": null,
       "code": "SELFCHECK_FAIL",
-      "message": " | [SmartTest] Selfcheck failed: scripts/rate-limit.selfcheck.ts (exit 1) | ",
-      "raw": "    at Object.<anonymous> (/vercel/share/v0-project/node_modules/server-only/index.js:1:7)\n    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object.transformer (/vercel/share/v0-project/node_modules/tsx/dist/register-C557imBs.cjs:9:3619)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1600:12)\n    at require (node:internal/modules/helpers:153:16)\n    at <anonymous> (/vercel/share/v0-project/lib/rate-limit.ts:1:8)\n    at Object.<anonymous> (/vercel/share/v0-project/lib/rate-limit.ts:82:17)\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/rate-limit.selfcheck.ts (exit 1)\n"
+      "message": "dev-stand (BASTUR_DEPLOY_ENV=dev, NODE_ENV=prod) auto-bypasses captcha",
+      "raw": "AssertionError [ERR_ASSERTION]: dev-stand (BASTUR_DEPLOY_ENV=dev, NODE_ENV=prod) auto-bypasses captcha\n\nfalse !== true\n\n    at main (/vercel/share/v0-project/scripts/recaptcha.selfcheck.ts:147:10) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\n[SmartTest] Selfcheck failed: scripts/recaptcha.selfcheck.ts (exit 1)\n"
     }
   ],
   "totals": {
