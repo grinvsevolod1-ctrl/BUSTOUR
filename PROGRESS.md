@@ -4,8 +4,13 @@
 
 ## Задачи текущей сессии
 
-- [ ] 1. Баги: битые символы, все form.getAll, сломанный диалог «несохранённые изменения», консольные ошибки
-- [ ] 2. Единая система валют: общий компонент, векторные иконки (BYN/USD/EUR/RUB…), выбор валюты в ценах туров, автообновление NBRB (cron)
+- [x] 1. Баги: битые символы (5 файлов), диалог «несохранённые изменения» (токен admin-card + ложный dirty на маунте: shortcode-input dispatch + RTE onCreate + onBlur), Vercel Analytics 404 на self-hosted
+- [x] 2. Единая система валют:
+  - components/currency/currency-icon.tsx — векторные иконки (BYN=SVG пользователя, USD/EUR/RUB/PLN/GBP/CHF/UAH/KZT/TRY/CNY/JPY=lucide)
+  - components/currency/currency-select.tsx — единый дропдаун с иконками (a11y, listbox)
+  - Внедрён: tour-additional-block (datesCurrency, extraPriceCurrency), tour-pricing-editor (валюта таблицы + валюта доп. цены строк), currency-manager (иконки в таблице)
+  - Автообновление NBRB: lib/currency-auto-refresh.ts + instrumentation.ts (каждые 6ч + при старте, лидер-лок через настройку currencyNbrbLastAutoRefreshAt)
+  - Проверено в браузере: дропдаун с иконками работает на форме тура
 - [ ] 3. Заявки: настраиваемая почта получения в админке; аналитика Metrika/GA/FB Pixel через админку/БД
 - [ ] 4. Reorder-стрелки во всех подходящих разделах админки
 - [ ] 5. Умный поиск в шапке админки (синонимы, «человеческие» описания разделов)
