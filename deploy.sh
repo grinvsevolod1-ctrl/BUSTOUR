@@ -93,8 +93,10 @@ if [ "$DO_PULL" -eq 1 ]; then
 fi
 
 # --- 3. Зависимости -----------------------------------------------------------
+# --include=dev обязателен: при NODE_ENV=production npm ci иначе пропускает
+# dev-зависимости (tsx, typescript), которые нужны для сборки.
 log "npm ci"
-npm ci --no-audit --no-fund
+npm ci --include=dev --no-audit --no-fund
 
 # --- 4. Сборка ----------------------------------------------------------------
 log "next build"
