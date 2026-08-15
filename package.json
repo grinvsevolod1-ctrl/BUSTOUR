@@ -48,7 +48,8 @@
     "test:static-pages": "npx tsx scripts/static-pages-http.selfcheck.ts",
     "test:media-smoke": "npx tsx scripts/smoke-media-lifecycle.ts",
     "db:reset:dev": "npx tsx scripts/reset-dev-db.ts",
-    "test:db-migrations": "npx tsx scripts/db-migration-safety.selfcheck.ts"
+    "test:db-migrations": "npx tsx scripts/db-migration-safety.selfcheck.ts",
+    "test:security": "npx tsx --conditions=react-server scripts/rate-limit.selfcheck.ts && npx tsx scripts/password.selfcheck.ts && npx tsx scripts/avia-slug.selfcheck.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
