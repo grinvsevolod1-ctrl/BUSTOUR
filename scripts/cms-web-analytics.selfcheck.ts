@@ -59,6 +59,7 @@ assert.deepEqual(
     ymCounterId: "12345678",
     gtmId: "",
     gaMeasurementId: "",
+    fbPixelId: "",
     enableWebvisor: false,
     goalLeadSuccess: "lead_success",
     goalCallbackSuccess: "call_done",

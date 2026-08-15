@@ -11,7 +11,12 @@
   - Внедрён: tour-additional-block (datesCurrency, extraPriceCurrency), tour-pricing-editor (валюта таблицы + валюта доп. цены строк), currency-manager (иконки в таблице)
   - Автообновление NBRB: lib/currency-auto-refresh.ts + instrumentation.ts (каждые 6ч + при старте, лидер-лок через настройку currencyNbrbLastAutoRefreshAt)
   - Проверено в браузере: дропдаун с иконками работает на форме тура
-- [ ] 3. Заявки: настраиваемая почта получения в админке; аналитика Metrika/GA/FB Pixel через админку/БД
+- [x] 3. Заявки — уведомления и аналитика:
+  - Группа настроек «Уведомления о заявках»: notify.emailTo/emailFrom/emailEnabled/telegramEnabled/telegramChatId — настройки из БД перекрывают env (LEAD_EMAIL_TO и т.п.)
+  - lib/notify.ts: loadNotifyConfig() читает getSettings() с фолбэком на env, валидация списка e-mail
+  - Facebook (Meta) Pixel: поле analytics.fbPixelId, загрузка только при marketing-consent (analytics-when-consented.tsx), trackCustom для целей
+  - CSP: + connect.facebook.net, facebook.com, google-analytics.com
+  - Проверено в браузере: обе группы настроек рендерятся
 - [ ] 4. Reorder-стрелки во всех подходящих разделах админки
 - [ ] 5. Умный поиск в шапке админки (синонимы, «человеческие» описания разделов)
 - [ ] 6. Сворачиваемые карточки туров в редактировании; удобные уведомления «мы не работаем» (page-alerts)
