@@ -84,7 +84,7 @@ const cmsActions = fs.readFileSync(path.join(root, "app/admin/cms-actions.ts"), 
 assert.ok(cmsActions.includes("settings_update"), "page save audits")
 assert.ok(cmsActions.includes("writeAudit"), "cms writeAudit wired")
 
-const mediaStorage = fs.readFileSync(path.join(root, "lib/media-storage.ts"), "utf8")
+const mediaStorage = fs.readFileSync(path.join(root, "lib/media/storage.ts"), "utf8")
 assert.ok(mediaStorage.includes('MediaStorageMode = "local"'), "local disk storage mode gate")
 assert.ok(mediaStorage.includes("isRemoteMediaUrl"), "legacy blob remote URL gate")
 

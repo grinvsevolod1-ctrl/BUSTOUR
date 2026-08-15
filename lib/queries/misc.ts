@@ -24,7 +24,7 @@ import {
   serializeMediaNode,
   serializeMediaNodeList,
   type MediaNode,
-} from "@/lib/media-node"
+} from "@/lib/media/node"
 import { toPublicReview } from "@/lib/review-utils"
 export async function getSlugMaps(): Promise<{
   countrySlugById: Record<number, string>

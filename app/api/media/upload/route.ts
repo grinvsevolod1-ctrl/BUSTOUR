@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/auth"
 import { writeAudit } from "@/lib/admin-audit"
-import { mediaService, validateMediaFile } from "@/lib/media-service"
+import { mediaService, validateMediaFile } from "@/lib/media/service"
 
 export const runtime = "nodejs"
 /** Video ffmpeg encode can be slow on large files. */

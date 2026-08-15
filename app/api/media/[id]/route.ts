@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/auth"
 import { writeAudit } from "@/lib/admin-audit"
-import { mediaService } from "@/lib/media-service"
+import { mediaService } from "@/lib/media/service"
 
 export const runtime = "nodejs"
 

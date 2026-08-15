@@ -8,13 +8,13 @@ import { eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { ensureDb } from "@/lib/db/init"
 import { mediaFiles } from "@/lib/db/schema"
-import { folderFilterSql, normalizeFolderName } from "@/lib/media-folders"
+import { folderFilterSql, normalizeFolderName } from "@/lib/media/folders"
 import {
   createMediaFolder,
   deleteMediaFolder,
   listMediaFolders,
-} from "@/lib/media-folder-service"
-import { mediaService } from "@/lib/media-service"
+} from "@/lib/media/folder-service"
+import { mediaService } from "@/lib/media/service"
 import { uploadFolderId } from "@/lib/media"
 
 assert.equal(normalizeFolderName("  Tours  "), "Tours")

@@ -21,8 +21,8 @@ import { getCurrencies } from "@/lib/currencies-server"
 import { getPublicSettings, isOn } from "@/lib/cms"
 import { expandPlainText, expandPublicDeep, expandPublicList } from "@/lib/expand-content-blocks"
 import { resolveTourLayout, anchoredSectionKeys } from "@/lib/tour-sections"
-import { buildGallerySlides, collectMediaIds } from "@/lib/media-node"
-import { getDefaultAltsByMediaIds } from "@/lib/media-service"
+import { buildGallerySlides, collectMediaIds } from "@/lib/media/node"
+import { getDefaultAltsByMediaIds } from "@/lib/media/service"
 import { getCanonicalOrigin } from "@/lib/canonical-origin"
 import {
   absoluteUrl,

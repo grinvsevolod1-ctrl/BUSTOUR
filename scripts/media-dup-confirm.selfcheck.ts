@@ -7,7 +7,7 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { createHash } from "node:crypto"
-import { isSha256Hex, sha256HexFromBlob } from "@/lib/media-checksum"
+import { isSha256Hex, sha256HexFromBlob } from "@/lib/media/checksum"
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..")
 

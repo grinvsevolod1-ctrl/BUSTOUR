@@ -211,6 +211,16 @@ async function seedCatalog() {
     countryRows.map((country) => [`${country.name.trim().toLowerCase()}:${country.category}`, country.id]),
   )
 
+  // Fail fast instead of inserting a dangling FK (0 never exists in countries).
+  function resolveCountryId(name: string, category: string): number {
+    const key = name.trim().toLowerCase()
+    const id = countryByNameCategory.get(`${key}:${category}`) ?? countryByName.get(key)
+    if (!id) {
+      throw new Error(`seed: country "${name}" (${category}) not found — cannot link countryId`)
+    }
+    return id
+  }
+
   if (await db.$count(cityDestinations) === 0) {
     await db.insert(cityDestinations).values(
       seedCities.map((city, index) => ({
@@ -218,10 +228,7 @@ async function seedCatalog() {
         name: city.name,
         category: city.category,
         country: city.country,
-        countryId:
-          countryByNameCategory.get(`${city.country.trim().toLowerCase()}:${city.category}`) ??
-          countryByName.get(city.country.trim().toLowerCase()) ??
-          0,
+        countryId: resolveCountryId(city.country, city.category),
         intro: city.intro,
         sections: JSON.stringify(city.sections),
         seoHtml: "",
@@ -266,10 +273,7 @@ async function seedCatalog() {
         duration: tour.duration,
         departure: tour.departure,
         country: tour.country,
-        countryId:
-          countryByNameCategory.get(`${tour.country.trim().toLowerCase()}:${tour.category}`) ??
-          countryByName.get(tour.country.trim().toLowerCase()) ??
-          0,
+        countryId: resolveCountryId(tour.country, tour.category),
         arrivalCityId: busCityByCountry.get(tour.country.trim().toLowerCase()) ?? fallbackBusCityId,
         nights: tour.nights,
         featured: tour.featured,
@@ -550,7 +554,7 @@ async function seedOperationalData() {
     if (licensesSection) {
       await db.insert(certificates).values([
         { sectionId: licensesSection.id, name: "Лицензия на туроператорскую деятельность", description: "Лицензия Министерства спорта и туризма Республики Беларусь, серия 02040/0247538", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=80", sortOrder: 0, createdAt: now },
-        { sectionId: licensesSection.id, name: "Свидетельство о государственной регистрации", description: "УНП 191560040, зарегистрировано Минским горисполкомом", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80", sortOrder: 1, createdAt: now + 1 },
+        { sectionId: licensesSection.id, name: "Свидетельство о государственн��й регистрации", description: "УНП 191560040, зарегистрировано Минским горисполкомом", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80", sortOrder: 1, createdAt: now + 1 },
       ])
     }
 

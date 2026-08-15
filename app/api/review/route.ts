@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { createReview } from "@/lib/queries"
-import { mediaService, validateMediaFile } from "@/lib/media-service"
+import { mediaService, validateMediaFile } from "@/lib/media/service"
 import { notifyLead, phoneCorrelationTag } from "@/lib/notify"
 import { encodeReviewPhoneSourceId } from "@/lib/review-contact"
 import { formatPhoneIfComplete, isSupportedPhone } from "@/lib/lead"

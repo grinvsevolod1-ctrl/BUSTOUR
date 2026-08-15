@@ -12,7 +12,7 @@ import {
   type MediaFolderScope,
   type MediaSort,
 } from "@/lib/media"
-import type { MediaFolder } from "@/lib/media-folders"
+import type { MediaFolder } from "@/lib/media/folders"
 import type { MediaItem, MediaType, UploadedFile } from "@/components/admin/media-uploader"
 import { MediaUploader, startUploadFileApi } from "@/components/admin/media-uploader"
 import { MediaThumbnail } from "@/components/admin/media-thumbnail"
@@ -26,7 +26,7 @@ import {
 } from "@/components/admin/ui"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { isMediaReady, toUploadedFile } from "@/lib/media-types"
+import { isMediaReady, toUploadedFile } from "@/lib/media/types"
 
 type FilterType = "all" | MediaType
 

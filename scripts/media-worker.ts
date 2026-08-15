@@ -1,5 +1,5 @@
 import { closeDbPool } from "../lib/db"
-import { mediaService } from "../lib/media-service"
+import { mediaService } from "../lib/media/service"
 
 const pollMs = Number(process.env.MEDIA_WORKER_POLL_MS || 3000)
 const leaseMs = Number(process.env.MEDIA_WORKER_LEASE_MS || 120000)

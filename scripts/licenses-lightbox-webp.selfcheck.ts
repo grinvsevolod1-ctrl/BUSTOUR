@@ -6,13 +6,13 @@ import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import sharp from "sharp"
-import { imageBytesToWebp } from "../lib/media-webp"
+import { imageBytesToWebp } from "../lib/media/webp"
 
 async function main() {
   const root = process.cwd()
   const licenses = readFileSync(join(root, "app/(site)/company/licenses/page.tsx"), "utf8")
   const lightbox = readFileSync(join(root, "components/site/image-lightbox.tsx"), "utf8")
-  const mediaService = readFileSync(join(root, "lib/media-service.ts"), "utf8")
+  const mediaService = readFileSync(join(root, "lib/media/service.ts"), "utf8")
 
   assert.match(licenses, /ImageLightbox/, "licenses page uses ImageLightbox")
   assert.match(

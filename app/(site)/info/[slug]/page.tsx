@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { notFound, permanentRedirect } from "next/navigation"
 import { getArticle, getArticles } from "@/lib/queries"
 import { articleUrl } from "@/lib/article-url"
-import { getAltTextByUrl } from "@/lib/media-service"
+import { getAltTextByUrl } from "@/lib/media/service"
 import { expandShortcodes } from "@/lib/shortcodes"
 
 export const dynamic = "force-dynamic"

@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto"
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
-import { MEDIA_MAX_HEIGHT_PX } from "@/lib/media-utils"
+import { MEDIA_MAX_HEIGHT_PX } from "@/lib/media/utils"
 
 export type VideoProcessResult = {
   bytes: Buffer

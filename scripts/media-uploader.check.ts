@@ -5,8 +5,8 @@ import {
   formatBytes,
   uploadedFileFromUrl,
 } from "../components/admin/media-uploader"
-import { isMediaReady, toUploadedFile } from "@/lib/media-types"
-import { resolveUploadContentType, validateMediaMeta } from "@/lib/media-utils"
+import { isMediaReady, toUploadedFile } from "@/lib/media/types"
+import { resolveUploadContentType, validateMediaMeta } from "@/lib/media/utils"
 
 assert.equal(formatBytes(1024), "1.0 KB")
 assert.equal(formatBytes(2517527), "2.4 MB")

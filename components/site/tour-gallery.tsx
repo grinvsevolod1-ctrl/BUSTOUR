@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import Image from "next/image"
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Play, X, Expand } from "lucide-react"
-import { extToType } from "@/lib/media-utils"
+import { extToType } from "@/lib/media/utils"
 import { ZoomableLightboxImage } from "@/components/site/image-lightbox"
 
 type Direction = "left" | "right" | "none"

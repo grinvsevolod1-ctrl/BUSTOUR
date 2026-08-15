@@ -24,7 +24,7 @@ import {
   serializeMediaNode,
   serializeMediaNodeList,
   type MediaNode,
-} from "@/lib/media-node"
+} from "@/lib/media/node"
 import { toPublicReview } from "@/lib/review-utils"
 import { parseJson, mapTour, assembleDatesTables, type DatesTourMeta } from "./_shared"
 

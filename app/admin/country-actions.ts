@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { requireAdmin, requireCapability } from "@/lib/auth"
+import { requireAdmin } from "@/lib/auth"
+import { withAdminAction } from "@/lib/admin-action"
 import { changedSettings, pickSettingsSubset, writeAudit } from "@/lib/admin-audit"
 import {
   createCountry,
@@ -181,47 +182,55 @@ export async function saveCountryBaseAction(_prev: unknown, formData: FormData) 
   return { ok: true }
 }
 
+const COUNTRY_LIST_REVALIDATE = [
+  "/admin/countries",
+  ["/", "layout"],
+  "/avtobusnye-tury",
+  "/aviatory",
+  "/hot",
+] as const
+
 export async function moveCountryAction(formData: FormData) {
-  const admin = await requireAdmin()
   const id = Number(formData.get("id") || 0)
   const direction = String(formData.get("direction") || "up") === "down" ? "down" : "up"
-  if (id) await moveCountry(id, direction)
-  const country = id ? await getCountryById(id) : undefined
-  await writeAudit({
-    admin,
-    action: "country_move",
-    entityType: "country",
-    entityId: id,
-    summary: country
-      ? `Перемещена страна «${country.name}» (${direction})`
-      : `Перемещена страна #${id} (${direction})`,
-    after: { direction, category: country?.category },
-  })
-  revalidatePath("/admin/countries")
-  revalidatePath("/", "layout")
-  revalidatePath("/avtobusnye-tury")
-  revalidatePath("/aviatory")
-  revalidatePath("/hot")
+  await withAdminAction(
+    { errorMessage: "Не удалось переместить страну", revalidate: COUNTRY_LIST_REVALIDATE },
+    async () => {
+      if (id) await moveCountry(id, direction)
+      const country = id ? await getCountryById(id) : undefined
+      return {
+        audit: {
+          action: "country_move",
+          entityType: "country",
+          entityId: id,
+          summary: country
+            ? `Перемещена страна «${country.name}» (${direction})`
+            : `Перемещена страна #${id} (${direction})`,
+          after: { direction, category: country?.category },
+        },
+      }
+    },
+  )
 }
 
 export async function reorderCountriesAction(formData: FormData) {
-  const admin = await requireAdmin()
   const orderedIds = parseOrderedIds(formData)
   if (orderedIds.length < 2) return
-  await reorderCountries(orderedIds)
-  await writeAudit({
-    admin,
-    action: "country_reorder",
-    entityType: "country",
-    entityId: orderedIds[0],
-    summary: "Обновлён порядок стран перетаскиванием",
-    after: { orderedIds },
-  })
-  revalidatePath("/admin/countries")
-  revalidatePath("/", "layout")
-  revalidatePath("/avtobusnye-tury")
-  revalidatePath("/aviatory")
-  revalidatePath("/hot")
+  await withAdminAction(
+    { errorMessage: "Не удалось изменить порядок стран", revalidate: COUNTRY_LIST_REVALIDATE },
+    async () => {
+      await reorderCountries(orderedIds)
+      return {
+        audit: {
+          action: "country_reorder",
+          entityType: "country",
+          entityId: orderedIds[0],
+          summary: "Обновлён порядок стран перетаскиванием",
+          after: { orderedIds },
+        },
+      }
+    },
+  )
 }
 
 export async function deleteCountryAction(formData: FormData) {
@@ -252,38 +261,39 @@ export async function deleteCountryAction(formData: FormData) {
 }
 
 export async function restoreCountryAction(formData: FormData) {
-  const admin = await requireAdmin()
   const id = Number(formData.get("id") || 0)
-  if (id) await restoreCountry(id)
-  await writeAudit({
-    admin,
-    action: "country_restore",
-    entityType: "country",
-    entityId: id,
-    summary: `Восстановлена страна #${id}`,
-  })
-  revalidatePath("/admin/countries")
-  revalidatePath("/admin/archive")
+  await withAdminAction(
+    { errorMessage: "Не удалось восстановить страну", revalidate: ["/admin/countries", "/admin/archive"] },
+    async () => {
+      if (id) await restoreCountry(id)
+      return {
+        audit: {
+          action: "country_restore",
+          entityType: "country",
+          entityId: id,
+          summary: `Восстановлена страна #${id}`,
+        },
+      }
+    },
+  )
   redirect("/admin/archive?notice=restored")
 }
 
 export async function purgeCountryAction(formData: FormData) {
-  const admin = await requireCapability("purge")
   const id = Number(formData.get("id") || 0)
-  try {
-    if (id) await purgeCountry(id)
-    await writeAudit({
-      admin,
-      action: "country_purge",
-      entityType: "country",
-      entityId: id,
-      summary: `Удалена страна #${id}`,
-    })
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Не удалось удалить"
-    redirect(`/admin/archive?error=${encodeURIComponent(msg)}`)
-  }
-  revalidatePath("/admin/countries")
-  revalidatePath("/admin/archive")
+  const outcome = await withAdminAction(
+    {
+      capability: "purge",
+      errorMessage: "Не удалось удалить",
+      revalidate: ["/admin/countries", "/admin/archive"],
+    },
+    async () => {
+      if (id) await purgeCountry(id)
+      return {
+        audit: { action: "country_purge", entityType: "country", entityId: id, summary: `Удалена страна #${id}` },
+      }
+    },
+  )
+  if ("error" in outcome) redirect(`/admin/archive?error=${encodeURIComponent(outcome.error)}`)
   redirect("/admin/archive?notice=purged")
 }

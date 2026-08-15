@@ -6,7 +6,7 @@ import {
   resolveImageAlt,
   serializeMediaNode,
   serializeMediaNodeList,
-} from "@/lib/media-node"
+} from "@/lib/media/node"
 
 assert.deepEqual(coerceMediaNode("/uploads/a.jpg"), { url: "/uploads/a.jpg" })
 assert.deepEqual(coerceMediaNode({ url: "/uploads/a.jpg", mediaId: "uuid-1", customAlt: " Салон " }), {

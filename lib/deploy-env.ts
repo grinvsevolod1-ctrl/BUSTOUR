@@ -5,7 +5,8 @@
 export type BustourDeployEnv = "local" | "dev" | "production"
 
 export function getBustourDeployEnv(): BustourDeployEnv {
-  const raw = (process.env.BASTUR_DEPLOY_ENV || "").trim().toLowerCase()
+  // Both spellings are accepted: .env templates use BASTUR_*, CI uses BUSTOUR_*.
+  const raw = (process.env.BASTUR_DEPLOY_ENV || process.env.BUSTOUR_DEPLOY_ENV || "").trim().toLowerCase()
   if (raw === "dev" || raw === "development" || raw === "staging" || raw === "vps") return "dev"
   if (raw === "production" || raw === "prod") return "production"
 

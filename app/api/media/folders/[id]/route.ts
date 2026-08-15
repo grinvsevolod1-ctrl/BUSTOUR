@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/auth"
 import { writeAudit } from "@/lib/admin-audit"
-import { deleteMediaFolder } from "@/lib/media-folder-service"
+import { deleteMediaFolder } from "@/lib/media/folder-service"
 
 export const runtime = "nodejs"
 

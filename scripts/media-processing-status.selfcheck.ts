@@ -20,7 +20,7 @@ assert.match(uploader, /onUploadAccepted\?\.\(\{/, "uploader reports uploaded it
 assert.match(uploader, /Можно закрыть страницу или перейти в другой раздел/, "uploader explains persisted processing state")
 assert.match(uploader, /return waitForReadyMedia\(item\.id\)/, "non-library flows still wait for ready media")
 
-const service = readFileSync(join(root, "lib/media-service.ts"), "utf8")
+const service = readFileSync(join(root, "lib/media/service.ts"), "utf8")
 assert.match(service, /status:\s*"processing"/, "service creates pending processing records")
 assert.match(service, /processingStage:\s*"queued"/, "service starts jobs in queued stage")
 assert.match(service, /async function claimNextProcessingMedia/, "service exposes worker claim loop")

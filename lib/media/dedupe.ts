@@ -1,4 +1,4 @@
-import type { MediaItem, UploadedFile } from "@/lib/media-types"
+import type { MediaItem, UploadedFile } from "@/lib/media/types"
 
 export function shouldReuseMedia(
   existing: UploadedFile | MediaItem | undefined,

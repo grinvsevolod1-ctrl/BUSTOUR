@@ -1,5 +1,5 @@
-import type { MediaItem, UploadedFile } from "@/lib/media-types"
-import type { MediaFolder } from "@/lib/media-folders"
+import type { MediaItem, UploadedFile } from "@/lib/media/types"
+import type { MediaFolder } from "@/lib/media/folders"
 
 export type MediaSort = "createdAt:desc" | "createdAt:asc"
 

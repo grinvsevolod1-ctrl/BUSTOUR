@@ -4,7 +4,7 @@ import { writeAudit } from "@/lib/admin-audit"
 import {
   createMediaFolder,
   listMediaFolders,
-} from "@/lib/media-folder-service"
+} from "@/lib/media/folder-service"
 
 export const runtime = "nodejs"
 

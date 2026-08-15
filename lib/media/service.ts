@@ -5,11 +5,11 @@ import { db, client } from "@/lib/db"
 import { ensureDb } from "@/lib/db/init"
 import { mediaFiles } from "@/lib/db/schema"
 import { eq, inArray } from "drizzle-orm"
-import { shouldReuseMedia } from "@/lib/media-dedupe"
-import type { MediaItem, MediaProcessingStage, UploadedFile } from "@/lib/media-types"
-import { isMediaReady, toUploadedFile } from "@/lib/media-types"
-import { folderExists } from "@/lib/media-folder-service"
-import { folderFilterSql } from "@/lib/media-folders"
+import { shouldReuseMedia } from "@/lib/media/dedupe"
+import type { MediaItem, MediaProcessingStage, UploadedFile } from "@/lib/media/types"
+import { isMediaReady, toUploadedFile } from "@/lib/media/types"
+import { folderExists } from "@/lib/media/folder-service"
+import { folderFilterSql } from "@/lib/media/folders"
 import {
   extensionsByType,
   formatBytes,
@@ -17,12 +17,12 @@ import {
   type MediaType,
   validateMediaMeta,
   MAX_MEDIA_SIZE_BYTES,
-} from "@/lib/media-utils"
-import { imageBytesForUpload } from "@/lib/media-webp"
-import { videoBytesForUpload } from "@/lib/media-ffmpeg"
+} from "@/lib/media/utils"
+import { imageBytesForUpload } from "@/lib/media/webp"
+import { videoBytesForUpload } from "@/lib/media/ffmpeg"
 import { resolveUploadDiskPath, uploadsDirectory } from "@/lib/upload-fs"
 
-export { MAX_MEDIA_SIZE_BYTES, MAX_MEDIA_SIZE_MB } from "@/lib/media-utils"
+export { MAX_MEDIA_SIZE_BYTES, MAX_MEDIA_SIZE_MB } from "@/lib/media/utils"
 
 const uploadDirectory = uploadsDirectory()
 const MEDIA_READY_POLL_MS = 1500

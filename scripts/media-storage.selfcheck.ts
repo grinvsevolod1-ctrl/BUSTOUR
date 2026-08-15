@@ -4,8 +4,8 @@
  * Run: npx tsx scripts/media-storage.selfcheck.ts
  */
 import assert from "node:assert/strict"
-import { isRemoteMediaUrl, mediaStorageMode } from "../lib/media-storage"
-import { resolveUploadContentType } from "../lib/media-utils"
+import { isRemoteMediaUrl, mediaStorageMode } from "../lib/media/storage"
+import { resolveUploadContentType } from "../lib/media/utils"
 
 // mediaStorageMode ALWAYS returns "local" now — no Vercel Blob, no exceptions.
 assert.equal(mediaStorageMode({}), "local")

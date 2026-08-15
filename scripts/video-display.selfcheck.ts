@@ -5,7 +5,7 @@
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
-import { resolveUploadContentType } from "../lib/media-utils"
+import { resolveUploadContentType } from "../lib/media/utils"
 import {
   fallbackThumbnail,
   getEmbedUrl,
@@ -56,7 +56,7 @@ assert.equal(resolveUploadContentType("a.webm", "video/webm", "video"), "video/w
 assert.equal(resolveUploadContentType("a.png", "", "image"), "image/png")
 assert.equal(resolveUploadContentType("a.png", "image/png", "image"), "image/png")
 
-const mediaService = read("lib/media-service.ts")
+const mediaService = read("lib/media/service.ts")
 assert.match(
   mediaService,
   /resolveUploadContentType/,

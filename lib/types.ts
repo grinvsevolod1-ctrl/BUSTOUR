@@ -1,7 +1,7 @@
 export type IncludedMarker = "check" | "dot" | "cross" | "star" | "dash"
 
-export type { MediaNode } from "@/lib/media-node"
-import type { MediaNode } from "@/lib/media-node"
+export type { MediaNode } from "@/lib/media/node"
+import type { MediaNode } from "@/lib/media/node"
 
 export type IncludedGroup = {
   title: string

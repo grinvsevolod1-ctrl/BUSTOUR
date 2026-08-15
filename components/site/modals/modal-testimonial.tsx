@@ -6,7 +6,7 @@ import { formatPhoneIfComplete, isSupportedPhone, sanitizePhoneTyping, validateL
 import { submitPublicReview } from "@/lib/public-review"
 import { stripReviewLinks } from "@/lib/review-utils"
 import { captchaRequiredClientError } from "@/lib/recaptcha-public"
-import { MAX_MEDIA_SIZE_BYTES, validateMediaMeta } from "@/lib/media-utils"
+import { MAX_MEDIA_SIZE_BYTES, validateMediaMeta } from "@/lib/media/utils"
 import {
   ModalCaptchaRow,
   ModalDivider,

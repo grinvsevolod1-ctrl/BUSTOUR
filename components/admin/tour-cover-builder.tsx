@@ -11,8 +11,8 @@ import {
   isMediaLibraryId,
   serializeMediaNode,
   type MediaNode,
-} from "@/lib/media-node"
-import { extToType } from "@/lib/media-utils"
+} from "@/lib/media/node"
+import { extToType } from "@/lib/media/utils"
 
 function uploadedFileFromMediaNode(node: MediaNode): UploadedFile {
   const cleanUrl = node.url.split(/[?#]/, 1)[0]

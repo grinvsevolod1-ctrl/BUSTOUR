@@ -5,20 +5,20 @@ import { ChevronDown, ChevronUp, FolderOpen, GripVertical, LoaderCircle, Upload,
 import { toast } from "sonner"
 import { Alert, IconButton, Label } from "@/components/admin/ui"
 import { MediaThumbnail } from "@/components/admin/media-thumbnail"
-import { detectType, extToType, extensionsByType, formatBytes, mimeTypesByType, MAX_MEDIA_SIZE_MB } from "@/lib/media-utils"
+import { detectType, extToType, extensionsByType, formatBytes, mimeTypesByType, MAX_MEDIA_SIZE_MB } from "@/lib/media/utils"
 import { cn } from "@/lib/utils"
 import { MediaPickerDialog } from "@/components/admin/media-picker-dialog"
 import { MediaAltField } from "@/components/admin/media-alt-field"
 import { InstanceAltField } from "@/components/admin/instance-alt-field"
-import { moveMediaAt, patchMediaAt, removeMediaAt } from "@/lib/media-list"
-import { sha256HexFromBlob } from "@/lib/media-checksum"
+import { moveMediaAt, patchMediaAt, removeMediaAt } from "@/lib/media/list"
+import { sha256HexFromBlob } from "@/lib/media/checksum"
 import { encodeImageFileToWebp } from "@/lib/browser-webp"
-import type { MediaItem, UploadedFile } from "@/lib/media-types"
-import { isMediaReady, toUploadedFile } from "@/lib/media-types"
+import type { MediaItem, UploadedFile } from "@/lib/media/types"
+import { isMediaReady, toUploadedFile } from "@/lib/media/types"
 
 export type MediaType = UploadedFile["type"]
-export type { MediaItem, UploadedFile } from "@/lib/media-types"
-export { detectType, extToType, formatBytes } from "@/lib/media-utils"
+export type { MediaItem, UploadedFile } from "@/lib/media/types"
+export { detectType, extToType, formatBytes } from "@/lib/media/utils"
 
 export function uploadedFileFromUrl(url: string): UploadedFile {
   const cleanUrl = url.split(/[?#]/, 1)[0]

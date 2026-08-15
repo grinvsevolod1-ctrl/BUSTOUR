@@ -1,34 +1,39 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ADMIN_COOKIE_NAME, hasValidAdminSessionToken } from "@/lib/admin-session"
 import { PREVIEW_QUERY, verifyPreviewToken } from "@/lib/preview-token"
-import { DEFAULT_AVIA_SLUG, resolveAviaSlug } from "@/lib/avia-slug"
-import { client } from "@/lib/db"
+import { DEFAULT_AVIA_SLUG } from "@/lib/avia-slug"
 
 export const runtime = "nodejs"
 
-/** Read aviatory.slug once per cold-start, cache in memory. */
+/**
+ * The middleware never talks to Postgres directly — it would open a
+ * dedicated connection per instance just for one settings row. Instead
+ * it asks a lightweight internal route (which uses the app's shared DB
+ * client) and caches the result in memory.
+ */
 let cachedAviaSlug: string | null = null
 let cacheTs = 0
 const CACHE_TTL_MS = 60_000 // 1 minute
 
-async function getAviaSlug(): Promise<string> {
+async function getAviaSlug(origin: string): Promise<string> {
   const now = Date.now()
   if (cachedAviaSlug !== null && now - cacheTs < CACHE_TTL_MS) {
     return cachedAviaSlug
   }
 
   try {
-    const result = await client.execute({
-      sql: "SELECT value FROM settings WHERE key = 'aviatory.slug' LIMIT 1",
-      args: [],
+    const res = await fetch(`${origin}/api/internal/avia-slug`, {
+      signal: AbortSignal.timeout(2_000),
     })
-    const value = result.rows[0]?.value
-    const slug = resolveAviaSlug(typeof value === "string" ? value : undefined)
+    if (!res.ok) throw new Error(`avia-slug route responded ${res.status}`)
+    const data = (await res.json()) as { slug?: string }
+    const slug = typeof data.slug === "string" && data.slug ? data.slug : DEFAULT_AVIA_SLUG
     cachedAviaSlug = slug
     cacheTs = now
     return slug
   } catch {
-    return DEFAULT_AVIA_SLUG
+    // On failure serve the stale value if we ever had one, else the default.
+    return cachedAviaSlug ?? DEFAULT_AVIA_SLUG
   }
 }
 
@@ -55,7 +60,7 @@ export async function middleware(request: NextRequest) {
   if (previewGate) return previewGate
 
   const { pathname } = request.nextUrl
-  const aviaSlug = await getAviaSlug()
+  const aviaSlug = await getAviaSlug(request.nextUrl.origin)
 
   // 1. Requests to /{aviaSlug}... → rewrite to /aviatory/...
   if (pathname === `/${aviaSlug}` || pathname.startsWith(`/${aviaSlug}/`)) {

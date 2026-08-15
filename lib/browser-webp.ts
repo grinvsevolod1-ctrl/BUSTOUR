@@ -2,7 +2,7 @@
  * Browser-only: resize (max height 1080, no upscale) + encode image → WebP.
  * Used when server sharp is skipped (MEDIA_SKIP_WEBP / old CPU).
  */
-import { MEDIA_MAX_HEIGHT_PX } from "@/lib/media-utils"
+import { MEDIA_MAX_HEIGHT_PX } from "@/lib/media/utils"
 
 export async function encodeImageFileToWebp(file: File, quality = 0.9): Promise<File> {
   if (!file.type.startsWith("image/")) return file

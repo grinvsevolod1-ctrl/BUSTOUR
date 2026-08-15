@@ -1,11 +1,11 @@
-/** Flat media folders CRUD (DB). Pure helpers: `@/lib/media-folders`. */
+/** Flat media folders CRUD (DB). Pure helpers: `@/lib/media/folders`. */
 
 import { randomUUID } from "node:crypto"
 import { eq } from "drizzle-orm"
 import { db, client } from "@/lib/db"
 import { ensureDb } from "@/lib/db/init"
 import { mediaFolders, mediaFiles } from "@/lib/db/schema"
-import { normalizeFolderName, type MediaFolder } from "@/lib/media-folders"
+import { normalizeFolderName, type MediaFolder } from "@/lib/media/folders"
 
 export type { MediaFolder }
 

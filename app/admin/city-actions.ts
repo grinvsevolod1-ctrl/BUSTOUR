@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { requireAdmin, requireCapability } from "@/lib/auth"
+import { requireAdmin } from "@/lib/auth"
+import { withAdminAction } from "@/lib/admin-action"
 import { changedSettings, pickSettingsSubset, writeAudit } from "@/lib/admin-audit"
 import {
   createCity,
@@ -138,7 +139,7 @@ export async function saveCityPageAction(_prev: unknown, formData: FormData) {
     const fullField = `${pageKey}.${field}`
     const tabHash = "#settings-content" as const
     return {
-      error: `Проверьте поле «${labels[field] ?? "Основные данные"}»: ${issue?.message ?? "исправьте значение"}`,
+      error: `Проверьте поле «${labels[field] ?? "Основные данные"}»: ${issue?.message ?? "исправ��те значение"}`,
       fieldErrors: { [fullField]: issue?.message ?? "Исправьте значение" },
       firstError: {
         field,
@@ -200,43 +201,47 @@ export async function saveCityPageAction(_prev: unknown, formData: FormData) {
   return { ok: true }
 }
 export async function moveCityAction(formData: FormData) {
-  const admin = await requireAdmin()
   const id = Number(formData.get("id") || 0)
   const direction = String(formData.get("direction") || "up") === "down" ? "down" : "up"
-  if (id) await moveCity(id, direction)
-  const city = id ? await getCityById(id) : undefined
-  await writeAudit({
-    admin,
-    action: "city_move",
-    entityType: "city",
-    entityId: id,
-    summary: city
-      ? `Перемещён город «${city.name}» (${direction})`
-      : `Перемещён город #${id} (${direction})`,
-    after: { direction, category: city?.category },
-  })
-  revalidatePath("/admin/cities")
-  revalidatePath("/", "layout")
-  if (city) revalidateCatalogDestination({ category: city.category })
+  await withAdminAction(
+    { errorMessage: "Не удалось переместить город", revalidate: ["/admin/cities", ["/", "layout"]] },
+    async () => {
+      if (id) await moveCity(id, direction)
+      const city = id ? await getCityById(id) : undefined
+      if (city) revalidateCatalogDestination({ category: city.category })
+      return {
+        audit: {
+          action: "city_move",
+          entityType: "city",
+          entityId: id,
+          summary: city ? `Перемещён город «${city.name}» (${direction})` : `Перемещён город #${id} (${direction})`,
+          after: { direction, category: city?.category },
+        },
+      }
+    },
+  )
 }
 
 export async function reorderCitiesAction(formData: FormData) {
-  const admin = await requireAdmin()
   const orderedIds = parseOrderedIds(formData)
   if (orderedIds.length < 2) return
-  await reorderCities(orderedIds)
-  const firstCity = await getCityById(orderedIds[0])
-  await writeAudit({
-    admin,
-    action: "city_reorder",
-    entityType: "city",
-    entityId: orderedIds[0],
-    summary: "Обновлён порядок городов перетаскиванием",
-    after: { orderedIds, category: firstCity?.category },
-  })
-  revalidatePath("/admin/cities")
-  revalidatePath("/", "layout")
-  if (firstCity) revalidateCatalogDestination({ category: firstCity.category })
+  await withAdminAction(
+    { errorMessage: "Не удалось изменить порядок городов", revalidate: ["/admin/cities", ["/", "layout"]] },
+    async () => {
+      await reorderCities(orderedIds)
+      const firstCity = await getCityById(orderedIds[0])
+      if (firstCity) revalidateCatalogDestination({ category: firstCity.category })
+      return {
+        audit: {
+          action: "city_reorder",
+          entityType: "city",
+          entityId: orderedIds[0],
+          summary: "Обновлён порядок городов перетаскиванием",
+          after: { orderedIds, category: firstCity?.category },
+        },
+      }
+    },
+  )
 }
 
 export async function deleteCityAction(formData: FormData) {
@@ -268,39 +273,35 @@ export async function deleteCityAction(formData: FormData) {
 }
 
 export async function restoreCityAction(formData: FormData) {
-  const admin = await requireAdmin()
   const id = Number(formData.get("id") || 0)
-  if (id) await restoreCity(id)
-  await writeAudit({
-    admin,
-    action: "city_restore",
-    entityType: "city",
-    entityId: id,
-    summary: `Восстановлен город #${id}`,
-  })
-  revalidatePath("/admin/cities")
-  revalidatePath("/admin/archive")
+  await withAdminAction(
+    { errorMessage: "Не удалось восстановить город", revalidate: ["/admin/cities", "/admin/archive"] },
+    async () => {
+      if (id) await restoreCity(id)
+      return {
+        audit: { action: "city_restore", entityType: "city", entityId: id, summary: `Восстановлен город #${id}` },
+      }
+    },
+  )
   redirect("/admin/archive?notice=restored")
 }
 
 export async function purgeCityAction(formData: FormData) {
-  const admin = await requireCapability("purge")
   const id = Number(formData.get("id") || 0)
-  try {
-    if (id) await purgeCity(id)
-    await writeAudit({
-      admin,
-      action: "city_purge",
-      entityType: "city",
-      entityId: id,
-      summary: `Удалён город #${id}`,
-    })
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Не удалось удалить"
-    redirect(`/admin/archive?error=${encodeURIComponent(msg)}`)
-  }
-  revalidatePath("/admin/cities")
-  revalidatePath("/admin/archive")
+  const outcome = await withAdminAction(
+    {
+      capability: "purge",
+      errorMessage: "Не удалось удалить",
+      revalidate: ["/admin/cities", "/admin/archive"],
+    },
+    async () => {
+      if (id) await purgeCity(id)
+      return {
+        audit: { action: "city_purge", entityType: "city", entityId: id, summary: `Удалён город #${id}` },
+      }
+    },
+  )
+  if ("error" in outcome) redirect(`/admin/archive?error=${encodeURIComponent(outcome.error)}`)
   redirect("/admin/archive?notice=purged")
 }
 

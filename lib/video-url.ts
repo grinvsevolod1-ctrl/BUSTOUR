@@ -1,4 +1,4 @@
-import { extToType } from "@/lib/media-utils"
+import { extToType } from "@/lib/media/utils"
 
 /** Pathname without query/hash — works for `/uploads/x.mp4` and Blob HTTPS URLs. */
 export function mediaPathname(url: string): string {

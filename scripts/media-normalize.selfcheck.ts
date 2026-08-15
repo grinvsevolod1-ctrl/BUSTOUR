@@ -14,9 +14,9 @@ import {
   MAX_MEDIA_SIZE_BYTES,
   MAX_MEDIA_SIZE_MB,
   MEDIA_MAX_HEIGHT_PX,
-} from "../lib/media-utils"
-import { imageBytesToWebp } from "../lib/media-webp"
-import { isFfmpegAvailable, videoBytesForUpload } from "../lib/media-ffmpeg"
+} from "../lib/media/utils"
+import { imageBytesToWebp } from "../lib/media/webp"
+import { isFfmpegAvailable, videoBytesForUpload } from "../lib/media/ffmpeg"
 
 const root = process.cwd()
 
@@ -24,7 +24,7 @@ assert.equal(MAX_MEDIA_SIZE_MB, 200)
 assert.equal(MAX_MEDIA_SIZE_BYTES, 200 * 1024 * 1024)
 assert.equal(MEDIA_MAX_HEIGHT_PX, 1080)
 
-const mediaService = readFileSync(join(root, "lib/media-service.ts"), "utf8")
+const mediaService = readFileSync(join(root, "lib/media/service.ts"), "utf8")
 assert.match(mediaService, /videoBytesForUpload/, "saveFile runs video normalize")
 assert.match(mediaService, /MAX_MEDIA_SIZE_BYTES/, "size ceiling used")
 

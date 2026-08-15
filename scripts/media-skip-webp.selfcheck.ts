@@ -3,7 +3,7 @@
  * Run: npx tsx scripts/media-skip-webp.selfcheck.ts
  */
 import assert from "node:assert/strict"
-import { imageBytesForUpload } from "../lib/media-webp"
+import { imageBytesForUpload } from "../lib/media/webp"
 
 const png1x1 = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",

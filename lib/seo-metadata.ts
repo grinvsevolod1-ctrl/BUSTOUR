@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { branchPublicPrefix } from "@/lib/admin-public-href"
 import { resolvePublicCmsText } from "@/lib/cms-public-text"
-import { getAltTextByUrl } from "@/lib/media-service"
+import { getAltTextByUrl } from "@/lib/media/service"
 import { expandShortcodes } from "@/lib/shortcodes"
 import { canonicalAbsoluteUrl, getCanonicalOrigin } from "@/lib/canonical-origin"
 

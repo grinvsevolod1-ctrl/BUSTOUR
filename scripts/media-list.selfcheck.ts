@@ -3,7 +3,7 @@
  * Run: npx tsx scripts/media-list.selfcheck.ts
  */
 import assert from "node:assert/strict"
-import { moveMediaAt, patchMediaAt, removeMediaAt } from "@/lib/media-list"
+import { moveMediaAt, patchMediaAt, removeMediaAt } from "@/lib/media/list"
 import type { UploadedFile } from "@/components/admin/media-uploader"
 
 const a: UploadedFile = {

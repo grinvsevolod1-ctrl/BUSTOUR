@@ -1,4 +1,4 @@
-import type { MediaType } from "@/lib/media-utils"
+import type { MediaType } from "@/lib/media/utils"
 
 export interface UploadedFile {
   id: string

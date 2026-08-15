@@ -2,7 +2,7 @@
  * Image normalize for upload: max height 1080 (no upscale) → WebP near-lossless.
  * Falls back to original when sharp unavailable / MEDIA_SKIP_WEBP.
  */
-import { MEDIA_MAX_HEIGHT_PX } from "@/lib/media-utils"
+import { MEDIA_MAX_HEIGHT_PX } from "@/lib/media/utils"
 
 export { MEDIA_MAX_HEIGHT_PX }
 
