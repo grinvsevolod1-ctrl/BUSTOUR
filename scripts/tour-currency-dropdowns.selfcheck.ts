@@ -13,13 +13,17 @@ assert.ok(/currencies\?.*Currency\[\]/.test(additional) || /props.*currencies.*=
   "FAIL T2a: TourAdditionalBlock должен принимать currencies проп (массив админских валют)")
 
 // T2b: Базовая цена рядом - select (dropdown) name="datesCurrency" вместо статичного <span>{currencyCode}</span>
-const hasDatesCurrencySelect = /<[Ss]elect[^>]*name=["']datesCurrency["']|<option.*currencies\[\w+\]\.code/.test(additional)
+// Принимаем и legacy <Select>, и единый <CurrencySelect> (components/currency/currency-select.tsx)
+const hasDatesCurrencySelect =
+  /<(Currency)?[Ss]elect[\s\S]{0,120}name=["']datesCurrency["']/.test(additional) ||
+  /<option.*currencies\[\w+\]\.code/.test(additional)
 assert.ok(hasDatesCurrencySelect, "FAIL T2b: Рядом с базовой ценой select/dropdown name=datesCurrency вместо статичного спана кода валюты")
 
-// T2c: Валюта доп цены - <Select> или <select> вместо <Input name="extraPriceCurrency"
+// T2c: Валюта доп цены - <Select>/<CurrencySelect> вместо <Input name="extraPriceCurrency"
 const extraCurrencyNoInput = !/Input[^>]*name=["']extraPriceCurrency["']/.test(additional)
-const extraCurrencySelect = /select[^>]*extraPriceCurrency|Select[^>]*name=["']extraPriceCurrency/.test(additional)
-  || /option.*extraPriceCurrency|name=["']extraPriceCurrency["'][\s\S]{0,200}option/.test(additional)
+const extraCurrencySelect =
+  /<(Currency)?[Ss]elect[\s\S]{0,120}name=["']extraPriceCurrency["']/.test(additional) ||
+  /option.*extraPriceCurrency|name=["']extraPriceCurrency["'][\s\S]{0,200}option/.test(additional)
 assert.ok(extraCurrencyNoInput && extraCurrencySelect,
   "FAIL T2c: extraPriceCurrency - заменить Input на select/dropdown со списком валют из админки")
 

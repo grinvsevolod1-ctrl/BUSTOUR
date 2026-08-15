@@ -22,6 +22,7 @@ import {
   Badge,
 } from "@/components/admin/ui"
 import { useAdminDirtyForm } from "@/components/admin/use-admin-dirty-form"
+import { CurrencyIcon } from "@/components/currency/currency-icon"
 
 export function CurrencyManager({ currencies, markupPercent = 0 }: { currencies: Currency[]; markupPercent?: number }) {
   const [editing, setEditing] = useState<Currency | null>(null)
@@ -110,7 +111,11 @@ export function CurrencyManager({ currencies, markupPercent = 0 }: { currencies:
                 {currencies.map((c) => (
                   <Tr key={c.id}>
                     <Td className="font-medium">
-                      {c.code} {c.isBase ? <Badge tone="blue">базовая</Badge> : null}
+                      <span className="inline-flex items-center gap-1.5">
+                        <CurrencyIcon code={c.code} className="h-4 w-4 text-admin-fg-muted" />
+                        {c.code}
+                      </span>{" "}
+                      {c.isBase ? <Badge tone="blue">базовая</Badge> : null}
                     </Td>
                     <Td className="text-admin-fg-muted">{c.label}</Td>
                     <Td className="text-admin-fg-muted">{c.symbol || c.code}</Td>

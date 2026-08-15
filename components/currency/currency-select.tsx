@@ -76,7 +76,7 @@ export function CurrencySelect({
         aria-haspopup="listbox"
         aria-controls={open ? listboxId : undefined}
         onClick={() => setOpen((v) => !v)}
-        className={`flex w-full items-center gap-1.5 rounded-md border border-admin-border bg-white font-medium text-admin-fg transition-colors hover:bg-admin-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${btnPad}`}
+        className={`flex w-full items-center gap-1.5 rounded-md border border-admin-border bg-admin-card font-medium text-admin-fg transition-colors hover:bg-admin-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${btnPad}`}
       >
         {selected ? (
           <>
@@ -95,7 +95,7 @@ export function CurrencySelect({
           id={listboxId}
           role="listbox"
           aria-label={ariaLabel}
-          className="absolute left-0 z-50 mt-1 min-w-full overflow-hidden rounded-md border border-admin-border bg-white py-1 shadow-lg"
+          className="absolute left-0 z-50 mt-1 min-w-full overflow-hidden rounded-md border border-admin-border bg-admin-card py-1 shadow-lg"
         >
           {allowEmpty ? (
             <li role="option" aria-selected={current === ""}>
