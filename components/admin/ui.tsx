@@ -371,7 +371,8 @@ export function FormSection({
           className={cn("h-4 w-4 shrink-0 text-admin-fg-subtle transition-transform duration-150", open && "rotate-180")}
         />
       </button>
-      {open ? <div className="p-5">{children}</div> : null}
+      {/* Держим содержимое смонтированным (display:none), чтобы поля формы не терялись при submit */}
+      <div className={cn("p-5", !open && "hidden")}>{children}</div>
     </div>
   )
 }

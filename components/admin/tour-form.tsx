@@ -298,7 +298,7 @@ export function TourForm({
 
       <EditorWorkspace groups={workspaceGroups}>
       <>
-      <FormSection id="s-main" title="Основное" collapsible={false}>
+      <FormSection id="s-main" title="Основное">
         <div className="max-w-3xl space-y-4">
           <p className="text-xs text-admin-fg-muted">* — обязательные поля</p>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -456,12 +456,12 @@ export function TourForm({
 
       <>
       <fieldset disabled={!showSection("gallery")} className={showSection("gallery") ? undefined : "hidden"} aria-hidden={!showSection("gallery")}>
-        <FormSection id="s-gallery" title="Галерея (слайдер)" collapsible={false}>
+        <FormSection id="s-gallery" title="Галерея (слайдер)">
           <GalleryBuilder images={tour?.gallery} />
         </FormSection>
       </fieldset>
       <fieldset disabled={!showSection("included")} className={showSection("included") ? undefined : "hidden"} aria-hidden={!showSection("included")}>
-        <FormSection id="s-included" title="Что входит в тур" collapsible={false}>
+        <FormSection id="s-included" title="Что входит в тур">
           <p className="mb-3 text-xs text-admin-fg-subtle">
             Гибкие колонки: свой заголовок, вид маркера и список пунктов для каждой.
           </p>
@@ -470,7 +470,7 @@ export function TourForm({
       </fieldset>
 
       <fieldset disabled={!showSection("program")} className={showSection("program") ? undefined : "hidden"} aria-hidden={!showSection("program")}>
-        <FormSection id="s-program" title="Программа по дням" collapsible={false}>
+        <FormSection id="s-program" title="Программа по дням">
           <div className="space-y-3">
             <div className="flex flex-wrap justify-end gap-2">
               <Button
@@ -616,13 +616,13 @@ export function TourForm({
       </fieldset>
 
       <fieldset disabled={!showSection("documents")} className={showSection("documents") ? undefined : "hidden"} aria-hidden={!showSection("documents")}>
-        <FormSection id="s-docs" title="Полезные документы" collapsible={false}>
+        <FormSection id="s-docs" title="Полезные документы">
           <DocumentsBuilder documents={tour?.documents} />
         </FormSection>
       </fieldset>
 
       <fieldset disabled={!showSection("faq")} className={showSection("faq") ? undefined : "hidden"} aria-hidden={!showSection("faq")}>
-        <FormSection id="s-faq" title="Частые вопросы (для этой страницы)" collapsible={false}>
+        <FormSection id="s-faq" title="Частые вопросы (для этой страницы)">
           <FaqEditor items={faqs} groups={faqGroups} mode="groups" />
         </FormSection>
       </fieldset>
@@ -630,7 +630,7 @@ export function TourForm({
       </>
 
       <>
-      <FormSection id="s-layout" title="Порядок блоков" collapsible={false}>
+      <FormSection id="s-layout" title="Порядок блоков">
         <p className="mb-3 text-xs text-admin-fg-subtle">
           Скрыть (глаз), удалить или вернуть через «Добавить секцию» — как на страницах городов/стран.
         </p>
@@ -640,7 +640,7 @@ export function TourForm({
 
       <>
       <fieldset disabled={!showSection("dates")} className={showSection("dates") ? undefined : "hidden"} aria-hidden={!showSection("dates")}>
-        <FormSection id="s-dates" title="Даты и цены" collapsible={false}>
+        <FormSection id="s-dates" title="Даты и цены">
           {tour ? (
             <div className="space-y-4">
               <Alert tone="info">
@@ -667,7 +667,7 @@ export function TourForm({
       </>
 
       <>
-      <FormSection id="s-seo-meta" title="SEO и мета" collapsible={false}>
+      <FormSection id="s-seo-meta" title="SEO и мета">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="tour-meta-title">Title (SEO)</Label>
@@ -690,7 +690,7 @@ export function TourForm({
       </FormSection>
 
       <div className={showSection("seo") ? undefined : "hidden"} aria-hidden={!showSection("seo")}>
-        <FormSection id="s-seo" title="SEO-текст (расширенный)" collapsible={false}>
+        <FormSection id="s-seo" title="SEO-текст (расширенный)">
           <p className="mb-2 text-xs text-admin-fg-subtle">
             Форматирование, заголовки, списки, картинки, видео и ссылки. Показывается внизу страницы тура.
           </p>

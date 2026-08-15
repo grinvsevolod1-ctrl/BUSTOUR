@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { GuardedLink } from '@/components/admin/guarded-link';
+import { AdminSearch } from '@/components/admin/admin-search';
 import { useAdminDirty } from '@/components/admin/admin-dirty-provider';
 import { usePathname } from 'next/navigation';
 import type { LucideIcon } from 'lucide-react';
@@ -469,6 +470,9 @@ function SidebarBody({
 
   return (
     <>
+      <div className="mb-3 shrink-0">
+        <AdminSearch role={role} />
+      </div>
       <nav className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain pr-0.5 [scrollbar-width:thin] [scrollbar-color:#475569_transparent]">
         {sections.map((section) => {
           const groupOpen =
