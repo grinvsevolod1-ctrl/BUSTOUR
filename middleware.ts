@@ -75,11 +75,13 @@ export async function middleware(request: NextRequest) {
   // 1. Requests to /{aviaSlug}... → rewrite to /aviatory/...
   if (pathname === `/${aviaSlug}` || pathname.startsWith(`/${aviaSlug}/`)) {
     const rewritten = pathname.replace(`/${aviaSlug}`, "/aviatory")
-    // Rewrite against the loopback origin: with nextUrl.clone() behind nginx
-    // the origin is https://localhost:3000 and Next proxies to itself over
-    // TLS on a plain-HTTP port (EPROTO → 500).
-    const url = new URL(rewritten || "/aviatory/", INTERNAL_ORIGIN)
-    url.search = request.nextUrl.search
+    // ВАЖНО: rewrite строго на том же origin запроса (nextUrl.clone) —
+    // тогда Next обрабатывает его внутренне, без нового HTTP-запроса.
+    // Rewrite на 127.0.0.1 превращается в self-proxy: запрос снова проходит
+    // через middleware уже с /aviatory и ветка 2 отвечает 301 → бесконечный
+    // цикл редиректов /aviatury → /aviatury.
+    const url = request.nextUrl.clone()
+    url.pathname = rewritten || "/aviatory/"
     return NextResponse.rewrite(url)
   }
 
