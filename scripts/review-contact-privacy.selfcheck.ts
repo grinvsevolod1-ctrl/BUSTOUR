@@ -11,6 +11,7 @@ import {
   resolveAdminReviewPhone,
 } from "../lib/review-phone"
 import { reviewPlainText, stripPublicReviewText, toPublicReview } from "../lib/review-utils"
+import { readQueriesSource } from "./lib/read-queries-source"
 import type { Review } from "../lib/types"
 
 const root = path.join(import.meta.dirname, "..")
@@ -20,7 +21,7 @@ assert.ok(!route.includes("Тел: ${phone}"), "API must not append phone to rev
 assert.ok(route.includes("encodeReviewPhoneSourceId"), "API must encrypt phone into sourceId")
 assert.ok(route.includes("notifyLead"), "staff notify still gets plaintext phone once")
 
-const queries = fs.readFileSync(path.join(root, "lib/queries.ts"), "utf8")
+const queries = readQueriesSource(root)
 assert.ok(queries.includes("toPublicReview"), "public review queries must sanitize")
 
 const phone = "+375 (29) 111-22-33"

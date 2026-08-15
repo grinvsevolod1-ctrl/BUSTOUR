@@ -96,12 +96,15 @@ function extractFnBody(full: string, fnName: string): string {
   return full.slice(start, j)
 }
 
+// withAdminAction() / withAdminAction<T>() encapsulates auth + audit (lib/admin-action.ts)
+const WITH_ADMIN_ACTION_RE = /withAdminAction\s*(<[^>]*>)?\s*\(/
+
 function hasRequire(body: string): boolean {
-  return /requireAdmin\s*\(|requireCapability\s*\(/.test(body)
+  return /requireAdmin\s*\(|requireCapability\s*\(/.test(body) || WITH_ADMIN_ACTION_RE.test(body)
 }
 
 function hasAudit(body: string): boolean {
-  return /writeAudit\(|auditTourSnapshot\(/.test(body)
+  return /writeAudit\(|auditTourSnapshot\(/.test(body) || WITH_ADMIN_ACTION_RE.test(body)
 }
 
 const SLUGGED_RE = /(slug|find.*Slug|slugOwner|getTour\(|getBus\(|getTransfer\(|getArticle\(|findArticleIdBySlug|findTourIdBySlug|resolveSlugConflict|getCity|getCountry)/i

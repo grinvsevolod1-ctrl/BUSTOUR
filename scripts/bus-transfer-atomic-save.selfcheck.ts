@@ -1,6 +1,7 @@
 import assert from "node:assert/strict"
 import fs from "node:fs"
 import path from "node:path"
+import { readQueriesSource } from "./lib/read-queries-source"
 
 function splitTransactionBlocks(body: string): string[] {
   const blocks: string[] = []
@@ -28,7 +29,7 @@ function splitTransactionBlocks(body: string): string[] {
 async function main() {
   const root = path.resolve(__dirname, "..")
   const actionsSrc = fs.readFileSync(path.join(root, "app", "admin", "actions.ts"), "utf8")
-  const queriesSrc = fs.readFileSync(path.join(root, "lib", "queries.ts"), "utf8")
+  const queriesSrc = readQueriesSource(root)
 
   assert.match(
     queriesSrc,

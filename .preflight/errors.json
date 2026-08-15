@@ -1,17 +1,17 @@
 {
-  "startedAt": "2026-08-15T11:19:01.269Z",
-  "finishedAt": "2026-08-15T11:19:08.796Z",
+  "startedAt": "2026-08-15T11:39:25.143Z",
+  "finishedAt": "2026-08-15T11:39:35.485Z",
   "errors": [],
   "warnings": [
     {
       "stage": "selfcheck",
       "severity": "warning",
-      "file": "/vercel/share/v0-project/scripts/bus-catalog-sort.selfcheck.ts",
+      "file": "/vercel/share/v0-project/scripts/bus-transfer-atomic-save.selfcheck.ts",
       "line": null,
       "column": null,
       "code": "SELFCHECK_FAIL",
-      "message": " | [SmartTest] Selfcheck failed: scripts/bus-catalog-sort.selfcheck.ts (exit 1) | ",
-      "raw": "    'export * from \"./queries/reviews\"\\n' +\n    'export * from \"./queries/articles\"\\n' +\n    'export * from \"./queries/leads\"\\n' +\n    'export * from \"./queries/staff\"\\n' +\n    'export * from \"./queries/certs\"\\n' +\n    'export * from \"./queries/misc\"\\n',\n  expected: /function mapTour[\\s\\S]*?sortOrder:\\s*row\\.sortOrder/,\n  operator: 'match',\n  diff: 'simple'\n}\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/bus-catalog-sort.selfcheck.ts (exit 1)\n"
+      "message": " | [SmartTest] Selfcheck failed: scripts/bus-transfer-atomic-save.selfcheck.ts (exit 1) | ",
+      "raw": "    ' * Исторически это был монолит на ~1600 строк. Код разнесён по доменным модулям\\n' +\n    ' * в lib/queries/, а этот файл сохраняет обратную совместимость: все существующие\\n' +\n    ' * импорты `@/lib/queries` продолжают работать без изменений.\\n' +\n    ' *\\n' +\n    ' * Новый код может импортировать доменные модули напрямую:\\n' +\n    ' *   import { getTours } from \"@/lib/queries/tours\"\\n' +\n    ' */\\n' +\n    '...',\n  expected: /export async function createBus\\([^)]*executor\\s*:\\s*DbExecutor\\s*=\\s*db/,\n  operator: 'match',\n  diff: 'simple'\n}\n\n[SmartTest] Selfcheck failed: scripts/bus-transfer-atomic-save.selfcheck.ts (exit 1)\n"
     }
   ],
   "totals": {

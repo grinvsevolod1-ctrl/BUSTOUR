@@ -15,6 +15,9 @@ function src(rel: string) {
 function mustHave(rel: string, needles: string[]) {
   const body = src(rel)
   for (const needle of needles) {
+    // withAdminAction() (lib/admin-action.ts) writes the audit entry internally,
+    // so it satisfies the «writeAudit» requirement.
+    if (needle === "writeAudit" && /withAdminAction\s*(<[^>]*>)?\s*\(/.test(body)) continue
     assert.ok(body.includes(needle), `${rel} missing «${needle}»`)
   }
 }

@@ -5,7 +5,8 @@ import { join } from "node:path"
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8")
 const listing = read("components/site/tours-listing.tsx")
 const types = read("lib/types.ts")
-const queries = read("lib/queries.ts")
+// mapTour lives in the shared module behind the lib/queries.ts barrel
+const queries = read("lib/queries/_shared.ts")
 
 assert.match(listing, /category\s*===\s*["']bus["']/)
 assert.match(listing, /value:\s*["']popularity["'],\s*label:\s*["']По популярности["']/)
