@@ -6,6 +6,7 @@ import { useMemo, useState } from "react"
 import type { Tour } from "@/lib/types"
 import { finalPrice, formatDateRange, upcomingRows, isDateRangeOrdered } from "@/lib/dates-table"
 import { Card, CardBody, CardHeader, CardTitle, EmptyState, Input, PageHeader, Select, TableWrap, Tbody, Td, Th, Thead, Tr } from "@/components/admin/ui"
+import { TourPricingImportExport } from "@/components/admin/tour-pricing-import-export"
 
 type SortKey = "date" | "basePrice" | "finalPrice" | "tour"
 type GridRow = {
@@ -118,6 +119,8 @@ export function TourPricingWorkspace({ tours, cityNameById }: { tours: Tour[]; c
   return (
     <div className="space-y-6">
       <PageHeader title="Даты и цены" description="Рабочее пространство для управления выездами и контроля цен автобусных туров." />
+
+      <TourPricingImportExport />
 
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
