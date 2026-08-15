@@ -1,10 +1,21 @@
 {
-  "startedAt": "2026-08-14T14:27:24.673Z",
-  "finishedAt": "2026-08-14T14:28:16.176Z",
+  "startedAt": "2026-08-15T04:27:28.000Z",
+  "finishedAt": "2026-08-15T04:27:32.171Z",
   "errors": [],
-  "warnings": [],
+  "warnings": [
+    {
+      "stage": "selfcheck",
+      "severity": "warning",
+      "file": "/vercel/share/v0-project/scripts/admin-roles.selfcheck.ts",
+      "line": null,
+      "column": null,
+      "code": "SELFCHECK_FAIL",
+      "message": " | [SmartTest] Selfcheck failed: scripts/admin-roles.selfcheck.ts (exit 1) | ",
+      "raw": "    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:326:3)\n    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:231:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/admin-roles.selfcheck.ts (exit 1)\n"
+    }
+  ],
   "totals": {
     "errors": 0,
-    "warnings": 0
+    "warnings": 1
   }
 }
