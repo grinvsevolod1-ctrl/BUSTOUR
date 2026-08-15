@@ -88,6 +88,18 @@ fi
 
 command -v pm2 >/dev/null 2>&1 || fail "pm2 не найден. Запустите: ./deploy.sh --setup"
 
+# --- Ротация логов pm2 (идемпотентно) ------------------------------------------
+# Без ротации логи pm2 со временем съедают диск. Модуль ставится один раз,
+# настройки повторно применять безопасно.
+if ! pm2 ls 2>/dev/null | grep -q pm2-logrotate; then
+  log "Ставлю pm2-logrotate (ротация логов)"
+  pm2 install pm2-logrotate
+  pm2 set pm2-logrotate:max_size 20M
+  pm2 set pm2-logrotate:retain 14
+  pm2 set pm2-logrotate:compress true
+  pm2 set pm2-logrotate:rotateInterval '0 3 * * *'
+fi
+
 # --- 2. Код -------------------------------------------------------------------
 if [ "$DO_PULL" -eq 1 ]; then
   log "git pull origin $BRANCH"
@@ -125,6 +137,17 @@ mkdir -p logs
 log "pm2 startOrReload"
 pm2 startOrReload ecosystem.config.cjs
 pm2 save
+
+# Ротация логов pm2 — без неё логи со временем съедают диск.
+# Идемпотентно: повторная установка/set безвредны.
+if ! pm2 ls | grep -q pm2-logrotate; then
+  log "Устанавливаю pm2-logrotate (ротация логов)"
+  pm2 install pm2-logrotate
+  pm2 set pm2-logrotate:max_size 20M
+  pm2 set pm2-logrotate:retain 14
+  pm2 set pm2-logrotate:compress true
+  pm2 set pm2-logrotate:rotateInterval '0 3 * * *'
+fi
 
 # --- 7. Health-check ----------------------------------------------------------
 log "Проверяю /api/health"

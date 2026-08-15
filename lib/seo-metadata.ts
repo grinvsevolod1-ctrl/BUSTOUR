@@ -38,7 +38,8 @@ export type MetadataFromSettingsOptions = {
  * `{prefix}.metaTitle`, `.metaShortDesc` (preview, preferred), `.metaDescription` (fallback), `.metaImage`.
  * Image alt comes from media library (`media_files.alt_text`) by URL.
  */
-const FALLBACK_OG_IMAGE = '/images/og-default.svg'
+// PNG, не SVG: Telegram/WhatsApp/Facebook не рендерят SVG в превью ссылок.
+const FALLBACK_OG_IMAGE = '/images/og-default.png'
 
 export async function metadataFromSettings(
   settings: Record<string, string>,

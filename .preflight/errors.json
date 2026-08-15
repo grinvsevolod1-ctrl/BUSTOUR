@@ -1,17 +1,17 @@
 {
-  "startedAt": "2026-08-15T16:49:40.200Z",
-  "finishedAt": "2026-08-15T16:50:25.545Z",
+  "startedAt": "2026-08-15T16:57:26.167Z",
+  "finishedAt": "2026-08-15T16:57:37.222Z",
   "errors": [],
   "warnings": [
     {
       "stage": "selfcheck",
       "severity": "warning",
-      "file": "/vercel/share/v0-project/scripts/recaptcha.selfcheck.ts",
+      "file": "/vercel/share/v0-project/scripts/catalog-empty-show.selfcheck.ts",
       "line": null,
       "column": null,
       "code": "SELFCHECK_FAIL",
-      "message": "dev-stand (BASTUR_DEPLOY_ENV=dev, NODE_ENV=prod) auto-bypasses captcha",
-      "raw": "AssertionError [ERR_ASSERTION]: dev-stand (BASTUR_DEPLOY_ENV=dev, NODE_ENV=prod) auto-bypasses captcha\n\nfalse !== true\n\n    at main (/vercel/share/v0-project/scripts/recaptcha.selfcheck.ts:147:10) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\n[SmartTest] Selfcheck failed: scripts/recaptcha.selfcheck.ts (exit 1)\n"
+      "message": " | [SmartTest] Selfcheck failed: scripts/catalog-search-section-integration.selfcheck.ts (exit 1) | ",
+      "raw": "catalog-dedupe-baseline.selfcheck: inventory markdown not found, skipping (local analysis file)\ncatalog-dedupe-baseline.selfcheck: ok\n== scripts/catalog-empty-show.selfcheck.ts ==\nPASS T1 catalog-empty-show: sidebar + filter показывают все visible страны из CMS независимо от количества активных туров\n== scripts/catalog-filter-scroll.selfcheck.ts ==\ncatalog-filter-scroll.selfcheck: ok\n== scripts/catalog-home-country-cards.selfcheck.ts ==\ncatalog-home-country-cards.selfcheck: ok\n== scripts/catalog-search-section-integration.selfcheck.ts ==\n\nadmin-roles.selfcheck: warn — e2e/admin-roles-audit.spec.ts not present (local-only suite)\nFAIL: expected >=6 '.section.search' in admin-config.ts (6 destination page configs), got 0\n\n[SmartTest] Selfcheck failed: scripts/catalog-search-section-integration.selfcheck.ts (exit 1)\n"
     }
   ],
   "totals": {
