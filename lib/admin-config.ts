@@ -395,10 +395,10 @@ export const pageSettingsGroups: Record<string, {
           { key: "title.featured", label: "Лучшие предложения — заголовок", type: "shortcode-input" },
           {
             key: "description.featured",
-            label: "Лучшие предложения — описание под заголовком",
+            label: "Лучшие предложения �� описание под заголовком",
             type: "shortcode-textarea-multiline",
             rows: 2,
-            hint: "Короткий текст-интро над карточками «Лучшие предложения».",
+            hint: "Короткий текст-интро над карточками «Лучшие предл��жения».",
           },
           { key: "title.advantages", label: "Преимущества — заголовок", type: "shortcode-input" },
           {
@@ -784,7 +784,7 @@ export function aviaCityPageConfig(
     heading: isBus ? `Автобусные туры > Город: ${name}` : `Авиатуры > Город: ${name}`,
     url: isBus ? `/avtobusnye-tury/_/${slug}/` : `/aviatury/_/${slug}/`,
     sections: [
-      { key: `${p}.section.search`, label: "Фильтр и результаты поиска" },
+      { key: `${p}.section.search`, label: "Фильтр и резул��таты поиска" },
       { key: `${p}.section.cities`, label: "Карточки курортов" },
       { key: `${p}.section.resorts`, label: "Таблица" },
       { key: `${p}.section.seo`, label: "SEO-текст (расширенный)" },
@@ -1308,6 +1308,54 @@ export const settingsGroups: SettingsGroup[] = [
   },
   callusBannerSettingsGroup,
   {
+    heading: "Уведомления о заявках",
+    description:
+      "Куда отправлять новые заявки с сайта (бронирования, звонки, аренда). E-mail работает через Resend (ключ RESEND_API_KEY в окружении), Telegram — через бота (TELEGRAM_BOT_TOKEN).",
+    fields: [
+      {
+        key: "notify.emailTo",
+        label: "E-mail получателей заявок",
+        type: "textarea",
+        rows: 2,
+        placeholder: "info@bastur.by\nmanager@bastur.by",
+        hint: "По одному адресу на строку (или через запятую). Пусто — использовать адрес из переменной окружения LEAD_EMAIL_TO.",
+      },
+      {
+        key: "notify.emailFrom",
+        label: "E-mail отправителя",
+        placeholder: "БасТур <noreply@bastur.by>",
+        hint: "Адрес должен быть подтверждён в Resend. Пусто — значение LEAD_EMAIL_FROM из окружения.",
+      },
+      {
+        key: "notify.emailEnabled",
+        label: "Отправлять на e-mail",
+        type: "select",
+        defaultValue: "true",
+        options: [
+          { value: "true", label: "Да" },
+          { value: "false", label: "Нет" },
+        ],
+      },
+      {
+        key: "notify.telegramEnabled",
+        label: "Отправлять в Telegram",
+        type: "select",
+        defaultValue: "true",
+        options: [
+          { value: "true", label: "Да" },
+          { value: "false", label: "Нет" },
+        ],
+      },
+      {
+        key: "notify.telegramChatId",
+        label: "Telegram chat ID",
+        placeholder: "-1001234567890",
+        hint: "ID чата или канала. Пусто — значение TELEGRAM_CHAT_ID из окружения.",
+      },
+    ],
+    help: "Уведомления отправляются в фоне и не задерживают отправку формы. Если канал не настроен — он просто пропускается, заявка всё равно сохраняется в разделе «Заявки».",
+  },
+  {
     heading: "Веб-аналитика и цели",
     description: "Скрипты загружаются только после согласия посетителя на аналитические cookie.",
     fields: [
@@ -1315,6 +1363,7 @@ export const settingsGroups: SettingsGroup[] = [
       { key: "analytics.enableWebvisor", label: "Включить Вебвизор", type: "select", defaultValue: "true", options: [{ value: "true", label: "Да" }, { value: "false", label: "Нет" }] },
       { key: "analytics.gtmId", label: "Google Tag Manager", placeholder: "GTM-XXXXXXX" },
       { key: "analytics.gaMeasurementId", label: "Google Analytics 4", placeholder: "G-XXXXXXXXXX" },
+      { key: "analytics.fbPixelId", label: "Facebook (Meta) Pixel ID", placeholder: "1234567890123456", hint: "Загружается только после согласия на маркетинговые cookie." },
       { key: "analytics.goalLeadSuccess", label: "Цель: заявка на тур", placeholder: "lead_success" },
       { key: "analytics.goalCallbackSuccess", label: "Цель: заказ звонка", placeholder: "callback_request" },
       { key: "analytics.goalReviewSuccess", label: "Цель: отправка отзыва", placeholder: "review_success" },

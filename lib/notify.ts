@@ -38,16 +38,55 @@ function buildLines(data: LeadData): string[] {
 /** Hard timeout for outbound notification calls — a hung API must never stall the app. */
 const NOTIFY_TIMEOUT_MS = 5_000
 
-async function sendEmail(data: LeadData, lines: string[]) {
+/** Notification channel config: admin settings (DB) override env vars. */
+export type NotifyChannelConfig = {
+  emailEnabled: boolean
+  emailTo: string[]
+  emailFrom: string
+  telegramEnabled: boolean
+  telegramChatId: string
+}
+
+function parseEmailList(raw: string): string[] {
+  return raw
+    .split(/[\n,;]+/)
+    .map((s) => s.trim())
+    .filter((s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s))
+}
+
+async function loadNotifyConfig(): Promise<NotifyChannelConfig> {
+  let settings: Record<string, string> = {}
+  try {
+    const { getSettings } = await import("@/lib/cms")
+    settings = await getSettings()
+  } catch (err) {
+    console.error("[notify] settings load failed, falling back to env:", (err as Error).message)
+  }
+  const emailToSetting = parseEmailList(settings["notify.emailTo"] ?? "")
+  const emailToEnv = parseEmailList(process.env.LEAD_EMAIL_TO ?? "")
+  return {
+    emailEnabled: (settings["notify.emailEnabled"] ?? "true") !== "false",
+    emailTo: emailToSetting.length ? emailToSetting : emailToEnv.length ? emailToEnv : ["info@bastur.by"],
+    emailFrom:
+      settings["notify.emailFrom"]?.trim() || process.env.LEAD_EMAIL_FROM || "БасТур <onboarding@resend.dev>",
+    telegramEnabled: (settings["notify.telegramEnabled"] ?? "true") !== "false",
+    telegramChatId: settings["notify.telegramChatId"]?.trim() || process.env.TELEGRAM_CHAT_ID || "",
+  }
+}
+
+async function sendEmail(data: LeadData, lines: string[], config: NotifyChannelConfig) {
   const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) return
-  const to = process.env.LEAD_EMAIL_TO || "info@bastur.by"
-  const from = process.env.LEAD_EMAIL_FROM || "БасТур <onboarding@resend.dev>"
+  if (!apiKey || !config.emailEnabled || config.emailTo.length === 0) return
   try {
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from, to, subject: `${typeLabel(data.type)} — БасТур`, text: lines.join("\n") }),
+      body: JSON.stringify({
+        from: config.emailFrom,
+        to: config.emailTo,
+        subject: `${typeLabel(data.type)} — БасТур`,
+        text: lines.join("\n"),
+      }),
       signal: AbortSignal.timeout(NOTIFY_TIMEOUT_MS),
     })
   } catch (err) {
@@ -55,10 +94,10 @@ async function sendEmail(data: LeadData, lines: string[]) {
   }
 }
 
-async function sendTelegram(lines: string[]) {
+async function sendTelegram(lines: string[], config: NotifyChannelConfig) {
   const token = process.env.TELEGRAM_BOT_TOKEN
-  const chatId = process.env.TELEGRAM_CHAT_ID
-  if (!token || !chatId) return
+  const chatId = config.telegramChatId
+  if (!token || !chatId || !config.telegramEnabled) return
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
@@ -99,5 +138,6 @@ export async function notifyLead(data: LeadData) {
     meta.correlationId,
   )
   const lines = buildLines(data)
-  await Promise.allSettled([sendEmail(data, lines), sendTelegram(lines)])
+  const config = await loadNotifyConfig()
+  await Promise.allSettled([sendEmail(data, lines, config), sendTelegram(lines, config)])
 }

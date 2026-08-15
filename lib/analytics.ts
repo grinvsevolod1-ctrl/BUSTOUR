@@ -2,6 +2,7 @@ export type AnalyticsConfig = {
   ymCounterId: string
   gtmId: string
   gaMeasurementId: string
+  fbPixelId: string
   enableWebvisor: boolean
   goalLeadSuccess: string
   goalCallbackSuccess: string
@@ -13,6 +14,7 @@ type AnalyticsWindow = Window & {
   dataLayer?: Record<string, unknown>[]
   ym?: (counterId: number, method: "init" | "reachGoal", ...args: unknown[]) => void
   gtag?: (...args: unknown[]) => void
+  fbq?: (...args: unknown[]) => void
   __bustourAnalytics?: AnalyticsConfig & { allowed: boolean }
 }
 
@@ -21,6 +23,7 @@ export function analyticsConfigFromSettings(settings: Record<string, string>): A
     ymCounterId: settings["analytics.ymCounterId"]?.trim() ?? "",
     gtmId: settings["analytics.gtmId"]?.trim() ?? "",
     gaMeasurementId: settings["analytics.gaMeasurementId"]?.trim() ?? "",
+    fbPixelId: settings["analytics.fbPixelId"]?.trim() ?? "",
     enableWebvisor: ["1", "true"].includes(settings["analytics.enableWebvisor"] ?? "true"),
     goalLeadSuccess: settings["analytics.goalLeadSuccess"]?.trim() || "lead_success",
     goalCallbackSuccess: settings["analytics.goalCallbackSuccess"]?.trim() || "callback_request",
@@ -61,4 +64,6 @@ export function trackAnalyticsEvent(
     target.ym(counterId, "reachGoal", goalId, params)
   }
   target.gtag?.("event", eventName, params)
+  // Meta Pixel: forward as a custom event (loaded only with marketing consent).
+  target.fbq?.("trackCustom", eventName, params)
 }

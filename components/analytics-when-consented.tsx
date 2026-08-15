@@ -12,6 +12,7 @@ import {
 const YM_ID = /^\d{4,12}$/
 const GTM_ID = /^GTM-[A-Z0-9]+$/i
 const GA_ID = /^G-[A-Z0-9]+$/i
+const FB_PIXEL_ID = /^\d{6,20}$/
 
 function appendScript(id: string, src: string, onLoad?: () => void) {
   if (document.getElementById(id)) return
@@ -26,6 +27,7 @@ function appendScript(id: string, src: string, onLoad?: () => void) {
 /** Load analytics only after the visitor grants the analytics category. */
 export function AnalyticsWhenConsented({ settings }: { settings: Record<string, string> }) {
   const allowed = useConsentCategory("analytics")
+  const marketingAllowed = useConsentCategory("marketing")
   const router = useRouter()
   const config = analyticsConfigFromSettings(settings)
 
@@ -83,6 +85,28 @@ export function AnalyticsWhenConsented({ settings }: { settings: Record<string, 
     config.successRedirectUrl,
     config.ymCounterId,
   ])
+
+  // Meta (Facebook) Pixel — marketing consent category, separate from analytics.
+  useEffect(() => {
+    if (!marketingAllowed || !FB_PIXEL_ID.test(config.fbPixelId)) return
+    const target = window as Window & { fbq?: ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string }; _fbq?: unknown; __bustourFbPixelId?: string }
+    if (target.__bustourFbPixelId === config.fbPixelId) return
+    target.__bustourFbPixelId = config.fbPixelId
+    if (!target.fbq) {
+      const fbq: ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string; callMethod?: (...args: unknown[]) => void } = (...args: unknown[]) => {
+        if (fbq.callMethod) fbq.callMethod(...args)
+        else (fbq.queue ||= []).push(args)
+      }
+      fbq.queue = []
+      fbq.loaded = true
+      fbq.version = "2.0"
+      target.fbq = fbq
+      target._fbq = fbq
+    }
+    target.fbq("init", config.fbPixelId)
+    target.fbq("track", "PageView")
+    appendScript("bustour-fb-pixel", "https://connect.facebook.net/en_US/fbevents.js")
+  }, [marketingAllowed, config.fbPixelId])
 
   useEffect(() => {
     if (!config.successRedirectUrl) return
