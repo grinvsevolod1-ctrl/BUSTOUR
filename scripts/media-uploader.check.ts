@@ -4,7 +4,7 @@ import {
   extToType,
   formatBytes,
   uploadedFileFromUrl,
-} from "./media-uploader"
+} from "../components/admin/media-uploader"
 import { isMediaReady, toUploadedFile } from "@/lib/media-types"
 import { resolveUploadContentType, validateMediaMeta } from "@/lib/media-utils"
 

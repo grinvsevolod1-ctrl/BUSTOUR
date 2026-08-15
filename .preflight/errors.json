@@ -1,17 +1,17 @@
 {
-  "startedAt": "2026-08-15T09:59:23.019Z",
-  "finishedAt": "2026-08-15T09:59:29.718Z",
+  "startedAt": "2026-08-15T10:14:22.065Z",
+  "finishedAt": "2026-08-15T10:14:29.868Z",
   "errors": [],
   "warnings": [
     {
       "stage": "selfcheck",
       "severity": "warning",
-      "file": "/vercel/share/v0-project/scripts/audit-coverage.selfcheck.ts",
+      "file": "/vercel/share/v0-project/scripts/bus-catalog-sort.selfcheck.ts",
       "line": null,
       "column": null,
       "code": "SELFCHECK_FAIL",
-      "message": " | [SmartTest] Selfcheck failed: scripts/audit-coverage.selfcheck.ts (exit 1) | ",
-      "raw": "    at Module._compile (node:internal/modules/cjs/loader:1854:14)\n    at Object.transformer (/vercel/share/v0-project/node_modules/tsx/dist/register-C557imBs.cjs:9:3619)\n    at Module.load (node:internal/modules/cjs/loader:1577:32)\n    at Module._load (node:internal/modules/cjs/loader:1379:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/vercel/share/v0-project/.cursor/rules/admin-audit.mdc'\n}\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/audit-coverage.selfcheck.ts (exit 1)\n"
+      "message": " | [SmartTest] Selfcheck failed: scripts/bus-catalog-sort.selfcheck.ts (exit 1) | ",
+      "raw": "    'export * from \"./queries/reviews\"\\n' +\n    'export * from \"./queries/articles\"\\n' +\n    'export * from \"./queries/leads\"\\n' +\n    'export * from \"./queries/staff\"\\n' +\n    'export * from \"./queries/certs\"\\n' +\n    'export * from \"./queries/misc\"\\n',\n  expected: /function mapTour[\\s\\S]*?sortOrder:\\s*row\\.sortOrder/,\n  operator: 'match',\n  diff: 'simple'\n}\n\nNode.js v24.16.0\n\n[SmartTest] Selfcheck failed: scripts/bus-catalog-sort.selfcheck.ts (exit 1)\n"
     }
   ],
   "totals": {

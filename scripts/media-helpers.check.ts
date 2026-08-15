@@ -9,7 +9,7 @@ import {
   isChooserMediaGridCell,
   isMediaGridFirstRowIndex,
   normalizeMediaWidth,
-} from "./media-helpers"
+} from "../components/admin/editor/media-helpers"
 
 assert.equal(normalizeMediaWidth("50%"), "50%")
 assert.equal(normalizeMediaWidth("320px"), "320px")

@@ -1,6 +1,6 @@
 /**
  * Pure reorder helper for media grid DnD.
- * Run: npx tsx components/admin/editor/media-grid-dnd.check.ts
+ * Run: npx tsx scripts/media-grid-dnd.check.ts
  */
 import assert from "node:assert/strict"
 import { readFileSync } from "node:fs"

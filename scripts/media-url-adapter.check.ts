@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { uploadedFileFromUrl } from "./media-uploader"
+import { uploadedFileFromUrl } from "../components/admin/media-uploader"
 
 const image = uploadedFileFromUrl("/uploads/tour%20cover.png?version=2")
 assert.deepEqual(image, {
