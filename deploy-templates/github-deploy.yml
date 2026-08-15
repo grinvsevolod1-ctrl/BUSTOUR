@@ -1,0 +1,60 @@
+# =============================================================================
+# Автодеплой на VPS при push в main.
+#
+# Требуемые секреты репозитория (Settings -> Secrets and variables -> Actions):
+#   DEPLOY_SSH_HOST  - IP или домен сервера
+#   DEPLOY_SSH_USER  - пользователь (например, deploy)
+#   DEPLOY_SSH_KEY   - приватный ключ (ed25519), парный к ключу в authorized_keys
+#   DEPLOY_APP_DIR   - путь к приложению на сервере (например, /var/www/bastur)
+#
+# Если секреты не заданы, job тихо пропускается — тогда работает
+# cron-поллер (scripts/auto-deploy.sh --poll) как автономный fallback.
+# =============================================================================
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false # деплой нельзя обрывать посередине
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Деплоим только когда CI прошёл успешно на push в main
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    steps:
+      - name: Check deploy secrets
+        id: check
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+        run: |
+          if [ -z "$SSH_HOST" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Deploy secrets are not configured — skipping (cron poller on the server takes over)."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy over SSH
+        if: steps.check.outputs.configured == 'true'
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          APP_DIR: ${{ secrets.DEPLOY_APP_DIR }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=15 "$SSH_USER@$SSH_HOST" \
+            "cd '$APP_DIR' && bash scripts/auto-deploy.sh 2>&1 | tee -a logs/auto-deploy.log"
