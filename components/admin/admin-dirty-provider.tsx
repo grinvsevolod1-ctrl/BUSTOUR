@@ -103,6 +103,13 @@ export function AdminDirtyProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  // If every source became clean (or unregistered) while the dialog is open,
+  // there is nothing to discard — resolve as "safe to leave" automatically
+  // instead of showing "unsaved data in 0 areas".
+  useEffect(() => {
+    if (dialogOpen && dirtyCount === 0) settleDialog(true)
+  }, [dialogOpen, dirtyCount, settleDialog])
+
   useEffect(() => {
     if (dirtyCount === 0) return
     const beforeunload = (event: BeforeUnloadEvent) => {

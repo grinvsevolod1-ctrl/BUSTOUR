@@ -514,7 +514,9 @@ function EditorSurface({
         // TipTap can report empty briefly before content applies — don't wipe FormData.
         if (!next && defaultValue) return
         setHtml(next)
-        onChange?.(next)
+        // Deliberately NOT calling onChange here: initialization normalizes HTML
+        // (e.g. attribute order), which is not a user edit. Propagating it marked
+        // pristine forms as dirty and triggered false "unsaved changes" dialogs.
       },
     },
     [variant],

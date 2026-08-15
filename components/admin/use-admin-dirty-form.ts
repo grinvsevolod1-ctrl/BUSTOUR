@@ -21,7 +21,6 @@ type UseAdminDirtyFormApi = {
   formInputHandlers(): {
     onChange: () => void
     onInput: () => void
-    onBlur: () => void
   }
 }
 
@@ -67,11 +66,12 @@ export function useAdminDirtyForm(opts: UseAdminDirtyFormOpts): UseAdminDirtyFor
     [markClean],
   )
 
+  // NOTE: intentionally no onBlur — merely focusing and leaving a field
+  // must not mark the form dirty (it caused false "unsaved changes" dialogs).
   const formInputHandlers = useCallback(
     () => ({
       onChange: markDirty,
       onInput: markDirty,
-      onBlur: markDirty,
     }),
     [markDirty],
   )

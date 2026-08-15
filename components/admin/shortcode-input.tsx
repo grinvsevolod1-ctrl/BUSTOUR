@@ -83,7 +83,14 @@ export function ShortcodeInput({
   }, [defaultValue, editor])
 
   // SlugField listens for DOM "input" on the value source; React controlled updates don't fire it.
+  // Skip the mount pass: dispatching on initial value marked pristine admin forms
+  // as dirty (false "unsaved changes" dialog on every tour page).
+  const mountedRef = useRef(false)
   useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true
+      return
+    }
     const el = hiddenRef.current
     if (!el) return
     el.dispatchEvent(new Event("input", { bubbles: true }))
